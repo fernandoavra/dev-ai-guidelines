@@ -1,0 +1,62 @@
+---
+description: Invocar ao implementar features que afetam múltiplos componentes ou aplicações, quando a mudança toca mais de um app ou serviço
+alwaysApply: false
+---
+
+# Workflow: Feature Cross-Componente
+
+## Regra fundamental
+
+**Contrato primeiro. Implementação só após aprovação do contrato.**
+
+## Processo
+
+### 1. Design do contrato (antes de qualquer implementação)
+
+Adote o papel de arquiteto e:
+- Projete o contrato entre componentes primeiro
+- Defina schema de API, formato de eventos ou tipos compartilhados
+- Salve em `.cursor/plans/[nome-da-feature]-contract.md`
+- **Aguarde aprovação antes de prosseguir**
+
+Formato do contrato:
+```markdown
+# Contract: [Nome da Feature]
+
+## Resumo
+[O que este contrato define e por quê]
+
+## Componentes envolvidos
+- [componente]: [papel nesta feature]
+
+## Definições de interface
+[Schema de API, formato de eventos, tipos compartilhados]
+
+## Restrições
+[O que deve ser verdade em todas as implementações]
+
+## Ordem de implementação
+[Sequencial ou paralelo — seja explícito]
+
+## Questões em aberto
+[Decisões que precisam de input humano]
+```
+
+### 2. Após aprovação do contrato
+
+Implemente componente por componente:
+- Cada implementação deve ler e seguir o contrato
+- Comece pelo componente que define a interface (geralmente o backend/API)
+- Implemente os consumidores contra o contrato definido
+
+### 3. Validação
+
+- Revise se todas as implementações seguem o contrato
+- Escreva testes de integração cobrindo o fluxo cross-componente completo
+
+### 4. Se o escopo crescer
+
+Se durante o design o contrato revelar que a feature é maior que o esperado:
+- Comunique claramente
+- Proponha divisão em partes menores
+- Não reduza o escopo silenciosamente

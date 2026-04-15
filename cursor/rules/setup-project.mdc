@@ -1,0 +1,53 @@
+---
+description: Invocar ao configurar a estrutura de IA pela primeira vez em um projeto, ou quando solicitado a criar a configuração inicial do Cursor/IA no repositório
+alwaysApply: false
+---
+
+# Workflow: Setup Inicial do Projeto
+
+## Quando usar
+
+Primeira vez que as ferramentas de IA são configuradas em um projeto.
+
+## Processo
+
+### 1. Exploração completa (obrigatório antes de criar qualquer arquivo)
+
+Explore o projeto por completo, mapeando:
+- Raiz e cada subdiretório dentro de `apps/` (ou pastas de componentes equivalentes)
+- Tech stack, frameworks, linguagens e versões usadas em cada componente
+- Dependências compartilhadas, arquivos de ambiente, scripts e padrões de config
+- Documentação existente, READMEs e comentários inline
+- Padrões de comunicação entre componentes (REST, eventos, DB compartilhado, etc.)
+- Estratégia de testes e setup de CI/CD se presente
+
+**NÃO prossiga para criar arquivos antes de completar a exploração.**
+
+### 2. Criar a estrutura
+
+Após a exploração, crie:
+
+**a) `.cursorrules` na raiz do projeto**
+- Visão geral do projeto (máximo 3 linhas)
+- Mapa de estrutura de apps/ com papel de cada componente em uma linha
+- Convenções transversais (formato de commit, env vars, nomenclatura)
+- Cheatsheet de comandos (dev, build, test para cada app)
+- Instruções de contexto: "Ao trabalhar neste projeto, sempre consulte PROJECT.md para detalhes completos"
+
+**b) `.cursor/rules/` — uma regra por preocupação transversal encontrada no codebase**
+- Cada regra como arquivo `.mdc` com campo `description` escrito como trigger ("Invocar quando...")
+- Foco no que a IA erra sem orientação, não no óbvio
+- Inclua uma seção de Gotchas com pontos de falha específicos deste codebase
+
+**c) `PROJECT.md` — documentação viva (use a regra `project-documentation`)**
+
+**d) `.cursor/plans/active-plan.md`**
+- Template vazio pronto para ser preenchido por tarefa
+- Seções: Goal, Components Affected, Decisions, Next Steps
+
+### 3. Resumo de saída
+
+Após criar todos os arquivos, apresente:
+- O que foi encontrado em cada componente
+- Quais regras foram criadas e por quê
+- Gaps ou ambiguidades que devem ser esclarecidos

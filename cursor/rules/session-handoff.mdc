@@ -1,0 +1,42 @@
+---
+description: Invocar ao encerrar uma sessão de trabalho, antes de fechar o editor, ao mudar para uma tarefa diferente, ou quando solicitado a salvar o estado da sessão
+alwaysApply: false
+---
+
+# Workflow: Handoff de Sessão
+
+## Quando usar
+
+Sempre antes de encerrar uma sessão de trabalho produtiva. O plano ativo é o único estado que sobrevive entre sessões.
+
+## Processo
+
+Crie ou atualize `.cursor/plans/active-plan.md` (ou `.claude/plans/active-plan.md`) com:
+
+### State at Close
+
+- **Concluído:** o que foi completado (seja específico: arquivos alterados, decisões tomadas)
+- **Em progresso:** estado exato (não "trabalhando em X", mas "função Y em arquivo Z implementada até o passo 3")
+- **Bloqueado:** o que está bloqueado e por quê
+
+### Next Session Start
+
+- **Primeiro comando a rodar:** para verificar o estado
+- **Primeira tarefa a pegar:** específica o suficiente para começar sem contexto adicional
+- **Contexto que NÃO pode ser perdido:** decisões, constraints descobertas
+
+### Risks Open
+
+- Algo frágil ou incompleto que precisa de atenção
+- Testes não escritos para código já commitado
+- Decisões adiadas que afetarão próximos passos
+
+### Resumo em 3 frases
+
+O que alguém — humano ou IA — precisa saber para continuar este trabalho a frio.
+
+## Notas
+
+- Se uma tarefa foi concluída totalmente, limpe o active-plan.md para a próxima
+- Sempre faça commit do trabalho concluído antes de encerrar a sessão
+- Se algo ficou pela metade, documente o estado exato

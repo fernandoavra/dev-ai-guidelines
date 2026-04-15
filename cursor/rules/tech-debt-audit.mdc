@@ -1,0 +1,60 @@
+---
+description: Invocar para auditoria periódica de dívida técnica no codebase, avaliação de saúde do código, ou antes de planejar sprint de qualidade
+alwaysApply: false
+---
+
+# Workflow: Auditoria de Dívida Técnica
+
+## Regra fundamental
+
+**Apenas documentar. Nenhum fix durante a auditoria.**
+
+## Processo
+
+### 1. Escaneie o codebase inteiro
+
+Busque por:
+- Código morto (funções, arquivos, rotas nunca chamadas)
+- Inconsistências com padrões definidos no PROJECT.md
+- Testes ausentes em caminhos críticos
+- Comentários TODO/FIXME/HACK (liste todos com arquivo e linha)
+- Dependências desatualizadas ou com vulnerabilidades conhecidas
+- Anti-padrões encontrados (documente cada um com um exemplo)
+- Duplicação entre componentes que deveria ser extraída para utilitários compartilhados
+- Smells de segurança: valores hardcoded, permissões amplas, validação ausente
+
+### 2. Formato de saída
+
+Salve em `.cursor/plans/tech-debt-audit-[YYYY-MM-DD].md` (ou `.claude/plans/`):
+
+#### Resumo
+- Total de itens encontrados por categoria
+- Top 3 itens de maior risco
+
+#### Itens
+Cada item formatado como:
+```
+[CATEGORIA] [ARQUIVO:LINHA ou ESCOPO]
+Issue: o que foi encontrado
+Risco: impacto se não for resolvido
+Esforço: quick-win | planned | long-term
+Prioridade: high | medium | low
+```
+
+Categorias: `dead-code | duplication | missing-tests | convention | dependency | anti-pattern | todo`
+
+#### Ordem recomendada de resolução
+1. Quick wins (< 1 dia cada)
+2. Itens planejados (próxima sprint)
+3. Long-term (decisões arquiteturais necessárias)
+
+## Guia de esforço
+
+- `quick-win` — menos de meio dia, baixo risco
+- `planned` — requer slot de sprint, complexidade moderada
+- `long-term` — mudança arquitetural necessária, planejar com cuidado
+
+## Notas
+
+- Compare auditorias consecutivas para medir se a dívida está crescendo ou diminuindo
+- Quick wins são candidatos perfeitos para sessões de aquecimento ou onboarding

@@ -1,0 +1,68 @@
+---
+description: Convenções fundamentais do projeto — carregada em toda interação
+alwaysApply: true
+---
+
+# Convenções do Projeto
+
+## Idioma e Comunicação
+
+- Respostas sempre em **português (PT-BR)**
+- Nomes de variáveis, funções e classes em **inglês**
+- Comentários no código em **português**
+- Mensagens de validação e erros exibidos ao usuário em **português**
+
+## Comportamento Obrigatório
+
+- **Ler** o código existente antes de modificar — entender o contexto
+- **Seguir** os padrões e convenções já existentes no projeto
+- **Não** adicionar abstrações, utilitários ou helpers desnecessários
+- **Não** adicionar funcionalidades além do solicitado
+- **Não** adicionar comentários, docstrings ou type annotations em código não alterado
+- **Sempre** verificar PROJECT.md e .cursorrules antes de agir
+- **Nunca** supor regras de negócio — pergunte quando tiver dúvida
+- **Confirmar** antes de ações destrutivas ou irreversíveis
+
+## Git — Branches
+
+**Formato:** `tipo/descricao-em-kebab-case`
+
+| Prefixo | Uso |
+|-----------|-----|
+| `feat/` | Nova funcionalidade |
+| `fix/` | Correção de bug |
+| `hotfix/` | Correção urgente em produção |
+| `refactor/` | Refatoração sem mudança funcional |
+| `chore/` | Manutenção, builds, dependências |
+| `docs/` | Documentação |
+| `test/` | Testes |
+
+Regras: kebab-case, minúsculas, sem acentos, máximo ~50 caracteres na parte descritiva, verbos no imperativo. Sempre criar a partir de `main` atualizada.
+
+## Git — Commits
+
+**Formato:** `tipo: descrição imperativa sem ponto final`
+
+- Tipos: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+- Máximo 72 caracteres (incluindo tipo)
+- Português (PT-BR), modo imperativo (ex: "adiciona", "corrige")
+- Sem ponto final no assunto
+- Corpo separado por linha em branco quando necessário
+- **NUNCA** incluir `Co-Authored-By` referenciando IA nos commits
+
+## Locale e Formatação
+
+| Item | Padrão |
+|------|--------|
+| Locale | `pt-BR` |
+| Timezone | `America/Sao_Paulo` |
+| Moeda | BRL (`R$`) |
+| Data | `DD/MM/YYYY` |
+| Telefone | `(XX)XXXXX-XXXX` |
+| CPF | `XXX.XXX.XXX-XX` |
+
+## Referências do Projeto
+
+- Documentação completa: `PROJECT.md`
+- Plano de sessão ativo: `.cursor/plans/active-plan.md` (ou `.claude/plans/active-plan.md`)
+- Regras específicas: `.cursor/rules/`

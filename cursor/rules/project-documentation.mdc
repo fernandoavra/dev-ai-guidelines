@@ -1,0 +1,61 @@
+---
+description: Invocar ao gerar ou atualizar PROJECT.md, ao criar documentação do projeto, ou quando solicitado a documentar o projeto para onboarding
+alwaysApply: false
+---
+
+# Workflow: Geração do PROJECT.md
+
+## Quando usar
+
+Uma vez por projeto, logo após o setup inicial. Também para atualizações significativas.
+
+## Processo
+
+### 1. Exploração completa antes de escrever
+
+Explore em paralelo:
+- Estrutura de diretórios e árvore de arquivos completa
+- Tech stack, frameworks, versões e relações entre componentes
+- Padrões de arquitetura (REST, eventos, DB compartilhado, convenções de monorepo)
+- Documentação existente (README, comentários inline, wikis, arquivos .md)
+- Arquivos de ambiente, padrões de config e estratégia de secrets
+- Estratégia de testes: unit, integration, e2e — o que existe, o que falta
+- Pipelines de CI/CD e scripts de deploy
+- Gerenciamento de dependências e pacotes compartilhados
+- Padrões de git: branch naming, convenções de commit, tamanho de PR
+
+**NÃO escreva nenhum arquivo até a exploração estar completa.**
+
+### 2. Criar PROJECT.md na raiz
+
+Este arquivo serve dois públicos simultaneamente:
+- **Desenvolvedores humanos:** onboarding, orientação, referência diária
+- **Agentes de IA:** contexto estruturado para geração de código precisa
+
+### Estrutura obrigatória do PROJECT.md
+
+1. **Purpose & Scope** — o que faz em 3-5 frases (contexto de negócio, não técnico)
+2. **Architecture Overview** — diagrama + tabela de componentes + padrões de comunicação
+3. **Repository Structure** — árvore anotada + convenções de nomenclatura + anti-padrões
+4. **Development Setup** — pré-requisitos com versões exatas + setup zero-to-running
+5. **Coding Standards** — padrões reais do codebase com exemplos inline
+6. **Testing Strategy** — tipos, localização, comandos, o que deve sempre ter teste
+7. **Git Workflow** — branches, commits, PR process, deploy triggers
+8. **Cross-Cutting Concerns** — auth, config, shared utilities, observabilidade
+9. **Decision Log** — decisões arquiteturais (a seção mais valiosa para IA)
+10. **Onboarding Checklist** — dia 1, semana 1, o que ler por componente
+11. **AI Agent Guidelines** — convenções estritas vs. preferidas, como lidar com ambiguidade
+
+### 3. Regras de qualidade
+
+- Fundamente toda afirmação em algo encontrado no codebase — não invente convenções
+- Se algo não existe (sem testes, sem CI, sem padrão de erro), diga explicitamente como gap
+- Use exemplos concretos do código real, não boilerplate genérico
+- Mantenha cada seção escaneável: parágrafos curtos, listas, blocos de código inline
+- Se uma seção não tem nada real a dizer, escreva "Não estabelecido — a definir"
+
+### 4. Após criar o arquivo, reporte
+
+- 3 gaps mais importantes encontrados no projeto
+- 3 convenções inferidas (não explícitas) que devem ser confirmadas
+- Trigger de próxima revisão sugerido

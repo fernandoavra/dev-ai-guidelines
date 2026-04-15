@@ -1,0 +1,41 @@
+---
+description: Invocar antes de iniciar qualquer tarefa de implementação, antes de escrever código, ao planejar uma nova feature ou mudança
+alwaysApply: false
+---
+
+# Workflow: Início de Tarefa
+
+## Regra fundamental
+
+**Nunca pule para código sem aprovação explícita do plano.**
+
+## Processo
+
+### 1. Exploração (antes de qualquer código)
+
+- Leia PROJECT.md e as seções relevantes de `.cursorrules`
+- Leia regras em `.cursor/rules/` pertinentes à tarefa
+- Mapeie cada arquivo que precisará mudar e por quê
+- Identifique dependências cross-componente (quais componentes são afetados)
+- Sinalize qualquer ambiguidade que requer decisão antes de prosseguir
+
+### 2. Apresente o plano
+
+Após a exploração, apresente:
+
+1. **Plano de implementação** — passos, ordem, justificativa
+2. **Arquivos a criar ou modificar** — com motivo para cada
+3. **Riscos e edge cases** — o que pode dar errado
+4. **Perguntas que precisam de resposta** — antes de começar
+
+### 3. Aguarde aprovação
+
+**Não escreva nenhum código até o plano ser aprovado.**
+
+Se o plano revelar que mais de 3 arquivos em componentes diferentes são afetados, sinalize que este pode ser um caso para o workflow de feature cross-componente.
+
+### 4. Após aprovação
+
+- Implemente seguindo o plano aprovado
+- Se algo inesperado surgir durante a implementação, pare e comunique antes de divergir do plano
+- Atualize `.cursor/plans/active-plan.md` com o progresso

@@ -1,0 +1,50 @@
+---
+description: Invocar ao atualizar configuração existente do projeto, após adicionar novos componentes, após mudanças significativas de stack, ou após grande refatoração
+alwaysApply: false
+---
+
+# Workflow: Gap Analysis — Atualização Incremental
+
+## Quando usar
+
+O projeto já tem `.cursorrules` e/ou regras em `.cursor/rules/`. Objetivo: atualizar sem sobrescrever decisões intencionais.
+
+## Processo
+
+### 1. Leitura completa primeiro (não toque em nenhum arquivo ainda)
+
+Leia e internalize toda a configuração existente:
+- `.cursorrules` na raiz do projeto (se existir)
+- Todos os arquivos em `.cursor/rules/` (se existir)
+- CLAUDE.md na raiz (se existir — pode estar em uso pelo time com Claude Code)
+- PROJECT.md
+- Todos os diretórios de componentes (`apps/` ou equivalente)
+
+### 2. Produza o gap analysis antes de tocar em qualquer arquivo
+
+Reporte:
+- O que a configuração existente cobre bem vs. o que está faltando ou desatualizado
+- Quais regras existem, seu escopo, e o que ainda não está coberto
+- Inconsistências entre regras existentes e o codebase real
+- Convenções que mudaram desde a última atualização
+
+**Aguarde aprovação do gap analysis antes de prosseguir.**
+
+### 3. Após aprovação, aplique apenas as mudanças necessárias
+
+**`.cursorrules` — atualize, não reescreva:**
+- Preserve o que está funcionando
+- Adicione seções faltantes
+- Remova ou corrija o que está desatualizado
+- Mantenha abaixo de 150 linhas
+
+**`.cursor/rules/` — estenda, não substitua:**
+- Mantenha regras existentes intactas a menos que conflitem com achados
+- Crie novas regras apenas para áreas não cobertas
+- Mantenha consistência de formato entre todas as regras
+
+**PROJECT.md — atualize seções impactadas**
+
+### 4. Saída final
+
+Resumo de cada arquivo: alterado, criado ou deixado intacto — e por quê.

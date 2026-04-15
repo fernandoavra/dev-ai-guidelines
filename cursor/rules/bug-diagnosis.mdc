@@ -1,0 +1,55 @@
+---
+description: Invocar ao investigar um bug, debugar um problema, responder a um incidente, ou quando algo está quebrado em qualquer ambiente
+alwaysApply: false
+---
+
+# Workflow: Diagnóstico de Bug / Incidente
+
+## Regra fundamental
+
+**Root cause antes de qualquer código. Nunca sugira fix sem diagnóstico completo.**
+
+## Processo
+
+### 1. Coleta de contexto
+
+Antes de investigar, confirme:
+- **Sintoma:** qual é o comportamento errado?
+- **Ambiente:** dev, staging ou produção?
+- **Primeira observação:** quando foi percebido?
+- **Frequência:** sempre, intermitente, sob condição específica?
+- **Mudanças recentes:** últimos commits ou deploys relevantes?
+
+### 2. Investigação (não sugira fix ainda)
+
+1. Trace o caminho completo de execução do trigger até o ponto de falha
+2. Identifique cada arquivo envolvido nesse caminho
+3. Encontre exatamente onde o comportamento real diverge do esperado
+4. Verifique o git log para mudanças recentes nos arquivos envolvidos
+5. Verifique se há testes cobrindo este caminho e se passam
+
+### 3. Diagnóstico (somente após investigação completa)
+
+Não sugira fix até ter:
+- A causa raiz (não um sintoma)
+- A linha ou decisão específica onde quebra
+- Por que quebra (não apenas o que)
+- Se é regressão (funcionava antes) ou nunca funcionou
+
+### 4. Formato de saída
+
+```
+Causa raiz: [uma frase]
+Evidência: [arquivo:linha + explicação]
+Por que funcionava antes (se regressão): [o que mudou]
+Fix proposto: [mudanças específicas, não sugestões vagas]
+Risco do fix: [o que mais pode ser afetado]
+Testes a adicionar: [para prevenir regressão]
+```
+
+## Notas
+
+- Quanto mais contexto no preenchimento, melhor o diagnóstico
+- Se o bug é em produção e urgente, ainda assim faça o diagnóstico — um fix errado piora
+- Após resolver, documente causa e correção no Decision Log do PROJECT.md
+- Se o bug revelou ausência de testes, adicione ao backlog de tech debt

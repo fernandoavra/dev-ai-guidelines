@@ -1,0 +1,60 @@
+---
+description: Invocar ao revisar um pull request, antes de mergear mudanças de código, quando solicitado revisão completa de PR
+alwaysApply: false
+---
+
+# Workflow: Code Review Completo
+
+## Regra fundamental
+
+O código sendo revisado não foi escrito por você. Seu papel é encontrar problemas, não validar.
+
+## Processo
+
+Realize a revisão sob três perspectivas diferentes:
+
+### Perspectiva 1: Qualidade de código
+
+- Qualidade, legibilidade, padrões, conformidade com PROJECT.md
+- Correção lógica e edge cases não tratados
+- Aderência às convenções documentadas
+
+### Perspectiva 2: Segurança
+
+- Secrets, injection, gaps de auth, dados expostos
+- Validação de input em endpoints e limites do sistema
+- Tokens e credenciais em qualquer forma
+
+### Perspectiva 3: Testes
+
+- Cobertura de testes, edge cases ausentes, caminhos não testados
+- Qualidade dos testes escritos (testam comportamento ou implementação?)
+- Caminhos críticos que precisam de teste
+
+## Formato de Saída
+
+Para cada issue encontrado:
+
+```
+[SEVERIDADE: critical | major | minor] [ARQUIVO:LINHA]
+Problema: o que está errado
+Por quê: por que importa neste codebase
+Fix: sugestão concreta (com código se aplicável)
+```
+
+Também reporte:
+- **O que foi bem feito** — genuíno, não elogio genérico
+- **Conformidade com convenções** — segue PROJECT.md?
+- **Conformidade com regras** — seguiu .cursorrules?
+- **Candidatos ao Decision Log** — alguma decisão que deveria ser documentada?
+
+## Guia de severidade
+
+- `critical` — não pode mergear: risco de dados, segurança, funcionalidade quebrada
+- `major` — deve corrigir antes: viola convenções centrais, testes críticos ausentes
+- `minor` — sugestão: estilo, melhoria menor
+
+## Regras
+
+- Não aprove. Apenas reporte achados.
+- Não corrija. Apenas descreva.
