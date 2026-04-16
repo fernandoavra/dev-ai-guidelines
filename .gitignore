@@ -1,0 +1,20 @@
+# Configuração local do Claude Code — nunca commitar
+.claude/settings.local.json
+.claude/logs/
+.claude/plans/archive/
+
+# Configuração local do Cursor
+.cursor/logs/
+
+# Backups gerados pelos scripts de setup
+*.bak
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
