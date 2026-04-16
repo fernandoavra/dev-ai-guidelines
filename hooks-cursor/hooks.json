@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "_comment": [
+    "Configuração de referência para hooks do Cursor (cross-platform).",
+    "Copie para ~/.cursor/hooks.json (global) ou .cursor/hooks.json (projeto).",
+    "Scripts ficam em .cursor/hooks/scripts/ — node deve estar disponível.",
+    "Variável CURSOR_PROMPTS_DIR define onde ficam os prompts (default: ~/.cursor/prompts/).",
+    "Windows: use 'node' diretamente — nunca .sh. Os .mjs funcionam em todas as plataformas."
+  ],
+
+  "hooks": {
+
+    "sessionStart": [
+      {
+        "_comment": "Sessão nova: verifica se o projeto tem configuração de IA",
+        "command": "node .cursor/hooks/scripts/startup-check.mjs",
+        "timeout": 10
+      }
+    ],
+
+    "beforeShellExecution": [
+      {
+        "_comment": "Bloqueia comandos destrutivos antes de executar",
+        "command": "node .cursor/hooks/scripts/block-dangerous.mjs",
+        "timeout": 5
+      },
+      {
+        "_comment": "Bloqueia push/PR se testes estiverem falhando",
+        "matcher": "gh pr create|git push.*origin.*(main|master)",
+        "command": "node .cursor/hooks/scripts/require-tests.mjs",
+        "timeout": 120
+      }
+    ],
+
+    "afterFileEdit": [
+      {
+        "_comment": "Roda formatador automaticamente após qualquer edição",
+        "command": "node .cursor/hooks/scripts/format-on-edit.mjs",
+        "timeout": 30
+      }
+    ],
+
+    "stop": [
+      {
+        "_comment": "Registra fim de sessão em log e envia notificação desktop",
+        "command": "node .cursor/hooks/scripts/session-log.mjs",
+        "timeout": 10
+      }
+    ]
+
+  }
+}
