@@ -80,6 +80,44 @@ Skills em `.claude/skills/` (carregadas automaticamente quando relevantes):
 - `[skill-name]` — [trigger: quando é invocada]
 - `[skill-name]` — [trigger: quando é invocada]
 
+## Configuração de Modelos
+
+O projeto não impõe um modelo fixo — cada desenvolvedor configura o seu
+ambiente local conforme sua preferência e plano de assinatura.
+
+**Padrão do projeto** (fallback para quem não configurar nada):
+- Usa o modelo padrão do plano de cada desenvolvedor automaticamente
+- Opus 4.6 → planos Max e Team Premium
+- Sonnet 4.6 → planos Pro e Team Standard
+
+**Configuração pessoal recomendada** — adicione ao seu `~/.zshrc` ou `~/.bashrc`:
+
+```bash
+# Modelo da sessão principal (orquestração e tarefas complexas)
+# Opções: claude-opus-4-6 | claude-sonnet-4-6 | claude-haiku-4-5 | opusplan
+export ANTHROPIC_MODEL="claude-opus-4-6"
+
+# Modelo dos subagentes (tarefas focadas e execução)
+# Recomendado: sonnet — mais rápido e eficiente para trabalho delegado
+export CLAUDE_CODE_SUBAGENT_MODEL="claude-sonnet-4-6"
+```
+
+> Se nenhuma variável for definida, o Claude Code usa automaticamente o modelo
+> padrão do seu plano. Nenhuma configuração é obrigatória.
+
+**Alias `opusplan`** — alternativa ao Opus puro:
+usa Opus em plan mode e muda automaticamente para Sonnet em execution mode.
+```bash
+claude --model opusplan
+```
+
+**Regras do projeto para modelos:**
+- Variáveis de ambiente são **pessoais** — nunca commitar no repositório
+- Cada dev é responsável pela sua própria configuração
+- Subagentes definidos em `.claude/agents/` têm `model:` no frontmatter
+  como documentação de intenção — a variável `CLAUDE_CODE_SUBAGENT_MODEL`
+  tem precedência em tempo de execução
+
 ## Gerenciamento de Contexto
 
 **Ao compactar (`/compact`), sempre preserve:**
