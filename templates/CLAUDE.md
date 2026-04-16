@@ -80,6 +80,36 @@ Skills em `.claude/skills/` (carregadas automaticamente quando relevantes):
 - `[skill-name]` — [trigger: quando é invocada]
 - `[skill-name]` — [trigger: quando é invocada]
 
+## Orquestração de Agentes
+
+Esta sessão é o orquestrador. Na maioria das tarefas, delegue para subagentes
+em vez de executar tudo na thread principal.
+
+**Dispatch paralelo** (todas as condições devem ser verdadeiras):
+- 3 ou mais tarefas sem dependência entre si
+- Sem estado compartilhado entre as tarefas
+- Fronteiras de arquivo claramente separadas (sem risco de conflito)
+- Exemplos: explorar múltiplos módulos, rodar testes em componentes distintos,
+  gerar documentação de arquivos independentes
+
+**Dispatch sequencial** (qualquer condição é suficiente):
+- Tarefa B depende do output da tarefa A
+- Arquivos ou estado compartilhado entre as tarefas
+- Escopo ainda incerto — entender antes de agir
+
+**Dispatch em background** (não bloqueie a thread principal):
+- Pesquisa, exploração de codebase, análise de logs
+- Auditorias de segurança, performance profiling
+- Qualquer tarefa onde o resultado não é imediatamente necessário
+- Use `Ctrl+B` para enviar para background e continue trabalhando
+
+**Regra geral:** se uma subtarefa consumiria mais de 20% do contexto desta
+thread com resultados que você não vai referenciar diretamente, delegue para
+um subagente. Contexto preservado na thread principal = melhor raciocínio
+nas decisões de arquitetura.
+
+**Agentes disponíveis:** ver seção abaixo e `AGENTS.md` para referência completa.
+
 ## Configuração de Modelos
 
 O projeto não impõe um modelo fixo — cada desenvolvedor configura o seu
