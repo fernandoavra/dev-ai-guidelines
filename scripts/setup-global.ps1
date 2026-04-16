@@ -186,6 +186,34 @@ if (Test-Path $CursorHooksJson) {
 Success "hooks.json global do Cursor criado em $CursorHooksJson"
 
 # =============================================================================
+# CLAUDE.md GLOBAL — regras de orquestração para todos os projetos
+# =============================================================================
+
+Info "Instalando CLAUDE.md global..."
+
+$GlobalClaude = Join-Path $ClaudeDir "CLAUDE.md"
+
+if (Test-Path $GlobalClaude) {
+    Copy-Item $GlobalClaude "$GlobalClaude.bak" -Force
+    Warn "CLAUDE.md global existente salvo em $GlobalClaude.bak"
+}
+
+Copy-Item "templates\global-CLAUDE.md" $GlobalClaude -Force
+Success "CLAUDE.md global instalado em $GlobalClaude"
+
+# =============================================================================
+# COMANDOS GLOBAIS — disponíveis em todos os projetos como /ai:*
+# =============================================================================
+
+Info "Instalando comandos globais /ai:*..."
+
+$ClaudeCommandsDir = Join-Path $ClaudeDir "commands\ai"
+New-Item -ItemType Directory -Force -Path $ClaudeCommandsDir | Out-Null
+
+Copy-Item "commands\ai\*.md" $ClaudeCommandsDir -Force
+Success "Comandos instalados em $ClaudeCommandsDir"
+
+# =============================================================================
 # VARIÁVEIS DE AMBIENTE — instrução
 # =============================================================================
 

@@ -221,6 +221,33 @@ EOF
 success "hooks.json global do Cursor criado em $CURSOR_HOOKS_JSON"
 
 # =============================================================================
+# CLAUDE.md GLOBAL — regras de orquestração para todos os projetos
+# =============================================================================
+info "Instalando CLAUDE.md global..."
+
+GLOBAL_CLAUDE="$CLAUDE_DIR/CLAUDE.md"
+
+if [ -f "$GLOBAL_CLAUDE" ]; then
+  cp "$GLOBAL_CLAUDE" "$GLOBAL_CLAUDE.bak"
+  warn "CLAUDE.md global existente salvo em $GLOBAL_CLAUDE.bak"
+fi
+
+cp "templates/global-CLAUDE.md" "$GLOBAL_CLAUDE"
+success "CLAUDE.md global instalado em $GLOBAL_CLAUDE"
+
+# =============================================================================
+# COMANDOS GLOBAIS — disponíveis em todos os projetos como /ai:*
+# =============================================================================
+
+info "Instalando comandos globais /ai:*..."
+
+CLAUDE_COMMANDS_DIR="$CLAUDE_DIR/commands/ai"
+mkdir -p "$CLAUDE_COMMANDS_DIR"
+
+cp commands/ai/*.md "$CLAUDE_COMMANDS_DIR/"
+success "Comandos instalados em $CLAUDE_COMMANDS_DIR"
+
+# =============================================================================
 # VARIÁVEIS DE AMBIENTE — instrução (não modifica automaticamente)
 # =============================================================================
 
@@ -246,10 +273,25 @@ echo ""
 # =============================================================================
 
 echo "================================================================="
-echo "  Hooks globais configurados"
+echo "  Setup global concluído"
 echo "================================================================="
 echo ""
-echo "  Claude Code — $CLAUDE_SETTINGS"
+echo "  CLAUDE.md global   → ~/.claude/CLAUDE.md"
+echo "  Comandos /ai:*     → ~/.claude/commands/ai/"
+echo ""
+echo "  /ai:setup    — setup inicial de IA para projeto novo"
+echo "  /ai:update   — gap analysis e atualização incremental"
+echo "  /ai:docs     — gera ou atualiza PROJECT.md"
+echo "  /ai:task     — inicia tarefa com plano antes do código"
+echo "  /ai:handoff  — registra handoff antes de /clear"
+echo "  /ai:review   — code review com agentes"
+echo "  /ai:debt     — auditoria de dívida técnica"
+echo "  /ai:bug      — diagnóstico de bug (root cause first)"
+echo "  /ai:feature  — feature cross-componente com contrato"
+echo "  /ai:add      — integra novo componente/repositório à estrutura existente"
+echo ""
+echo "  Claude Code hooks  → $CLAUDE_SETTINGS"
+echo "  ├── CLAUDE.md global (orquestração multi-agente)"
 echo "  ├── startup-check   (SessionStart: startup)"
 echo "  ├── post-compact    (SessionStart: compact)"
 echo "  ├── post-clear-orient (SessionStart: clear)"
@@ -257,11 +299,10 @@ echo "  ├── intercept-clear (UserPromptSubmit)"
 echo "  ├── block-dangerous (PreToolUse: Bash)"
 echo "  └── session-log     (Stop)"
 echo ""
-echo "  Cursor — $CURSOR_HOOKS_JSON"
+echo "  Cursor hooks       → $CURSOR_HOOKS_JSON"
 echo "  ├── startup-check   (sessionStart)"
 echo "  ├── block-dangerous (beforeShellExecution)"
 echo "  └── session-log     (stop)"
 echo ""
-echo "  Próximo passo: rode setup-project.sh na raiz de cada projeto"
-echo "  para adicionar os hooks específicos de qualidade do time."
+echo "  Próximo passo: rode setup-project.sh na raiz de cada projeto."
 echo ""
