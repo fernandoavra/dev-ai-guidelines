@@ -1,0 +1,97 @@
+{
+  "_comment": [
+    "Configuração de referência para hooks do Claude Code.",
+    "Copie para ~/.claude/settings.json (global) ou .claude/settings.json (projeto).",
+    "Scripts devem estar em ~/.claude/hooks/ com permissão de execução (chmod +x).",
+    "Variável CLAUDE_PROMPTS_DIR define onde ficam os prompts (default: ~/.claude/prompts/)."
+  ],
+
+  "hooks": {
+
+    "SessionStart": [
+      {
+        "_comment": "Sessão nova: verifica se o projeto tem CLAUDE.md e agentes configurados",
+        "matcher": "startup",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/startup-check.sh",
+          "timeout": 10
+        }]
+      },
+      {
+        "_comment": "Após /compact: reinjecta plano ativo e orienta recontextualização",
+        "matcher": "compact",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/post-compact.sh",
+          "timeout": 5
+        }]
+      },
+      {
+        "_comment": "Após /clear: reinjecta próximos passos do handoff anterior",
+        "matcher": "clear",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/post-clear-orient.sh",
+          "timeout": 5
+        }]
+      }
+    ],
+
+    "UserPromptSubmit": [
+      {
+        "_comment": "Intercepta /clear e injeta prompt de handoff antes de limpar",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/intercept-clear.sh",
+          "timeout": 5
+        }]
+      }
+    ],
+
+    "PreToolUse": [
+      {
+        "_comment": "Bloqueia comandos Bash destrutivos antes de executar",
+        "matcher": "Bash",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/block-dangerous.sh",
+          "timeout": 5
+        }]
+      },
+      {
+        "_comment": "Bloqueia abertura de PR se testes estiverem falhando",
+        "matcher": "mcp__github__create_pull_request",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/require-tests.sh",
+          "timeout": 120
+        }]
+      }
+    ],
+
+    "PostToolUse": [
+      {
+        "_comment": "Roda formatador automaticamente após qualquer edição de arquivo",
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/format-on-edit.sh",
+          "timeout": 30
+        }]
+      }
+    ],
+
+    "Stop": [
+      {
+        "_comment": "Registra fim de sessão em log e envia notificação desktop",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/session-log.sh",
+          "timeout": 10
+        }]
+      }
+    ]
+
+  }
+}
