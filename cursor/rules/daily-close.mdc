@@ -1,0 +1,51 @@
+---
+description: Invocar ao encerrar o dia de trabalho para gerar um resumo diário do que foi feito, o que ficou em aberto e prioridades para o dia seguinte
+alwaysApply: false
+---
+
+# Workflow: Encerramento do Dia
+
+## Quando usar
+
+No final do expediente, para registrar o progresso do dia. O resumo diário complementa os handoffs individuais de cada tarefa — é uma visão panorâmica, não detalhada.
+
+## Processo
+
+### 1. Coletar informações
+
+- Leia todos os arquivos `.md` em `.claude/plans/` para entender as tarefas ativas
+- Rode `git log --oneline --since="today 00:00"` para ver os commits do dia
+- Rode `git diff --stat` para entender o escopo das mudanças
+
+### 2. Criar o resumo diário
+
+Crie `.claude/dailies/YYYY-MM-DD.md` com:
+
+```markdown
+# Daily — YYYY-MM-DD
+
+## Done today
+- (tarefas concluídas ou progresso significativo, 1 linha cada)
+
+## In progress
+- (tarefas ainda abertas — referenciar o arquivo do plano)
+
+## Blocked
+- (o que está bloqueado e por quê)
+
+## Commits
+- (commits do dia, 1 linha cada)
+
+## Tomorrow
+- (prioridades sugeridas para o dia seguinte)
+```
+
+### 3. Regras
+
+- Max 3-5 items por seção — é um resumo, não um log
+- NÃO duplique conteúdo dos handoffs — referencie os arquivos
+- Só inclua tarefas que foram tocadas hoje ou estão bloqueadas
+
+### 4. Informar
+
+Confirme o arquivo salvo e sugira usar a rule "daily-start" no dia seguinte.

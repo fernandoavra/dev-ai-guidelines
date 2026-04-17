@@ -1,0 +1,49 @@
+---
+description: Invocar ao retomar uma tarefa de sessão anterior, ao iniciar o editor querendo continuar trabalho prévio, ou quando solicitado a carregar o estado de uma tarefa salva
+alwaysApply: false
+---
+
+# Workflow: Retomar Sessão
+
+## Quando usar
+
+Ao iniciar uma nova sessão querendo continuar uma tarefa que foi salva anteriormente com o workflow de handoff.
+
+## Passo 1 — Identificar a tarefa
+
+Pergunte ao usuário qual tarefa deseja retomar. Se não souber o nome, liste todos os arquivos `.md` em `.claude/plans/` e `.cursor/plans/`:
+
+Para cada arquivo encontrado, leia as primeiras 10 linhas e extraia o nome da tarefa e a data. Apresente uma tabela numerada:
+
+| # | Tarefa | Data | Arquivo |
+|---|--------|------|---------|
+| 1 | Migrar auth para OAuth2 | 2026-04-15 | migrar-auth-para-oauth2.md |
+| 2 | Refatorar pagamentos | 2026-04-16 | refatorar-pagamentos.md |
+
+Se nenhum arquivo for encontrado, informe que não há tarefas salvas e sugira usar o workflow de handoff.
+
+Aguarde a escolha do usuário antes de prosseguir.
+
+## Passo 2 — Carregar o estado
+
+Leia `.claude/plans/<nome-da-tarefa>.md` e apresente um resumo:
+
+- O que foi concluído
+- O que estava em progresso
+- O que estava bloqueado
+- Quais eram os próximos passos
+
+## Passo 3 — Verificar estado atual
+
+- Rode `git status` para verificar a working tree
+- Verifique se os arquivos mencionados no handoff ainda existem e estão inalterados
+- Sinalize discrepâncias entre o estado salvo e a realidade atual
+
+## Passo 4 — Propor plano de retomada
+
+Apresente:
+- "Com base no handoff, a próxima ação é: ..."
+- Riscos ou bloqueios que foram sinalizados
+- Peça confirmação antes de executar qualquer mudança
+
+**Aguarde aprovação do usuário antes de implementar qualquer coisa.**

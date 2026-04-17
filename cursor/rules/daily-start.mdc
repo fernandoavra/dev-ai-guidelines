@@ -1,0 +1,42 @@
+---
+description: Invocar ao iniciar o dia de trabalho para ler o resumo do dia anterior e retomar o ritmo rapidamente
+alwaysApply: false
+---
+
+# Workflow: Início do Dia
+
+## Quando usar
+
+No começo do expediente, para carregar contexto do dia anterior e decidir por onde começar.
+
+## Processo
+
+### 1. Encontrar o resumo mais recente
+
+Liste os arquivos em `.claude/dailies/` ordenados por nome (decrescente). Leia o mais recente.
+
+Se não houver arquivos, informe que não há resumos diários e sugira usar a rule "daily-close" no final do dia.
+
+### 2. Apresentar briefing
+
+**Última sessão: YYYY-MM-DD**
+
+**Tarefas em andamento** (carry-over):
+- tarefa → estado atual (1 linha)
+
+**Itens bloqueados:**
+- item → razão
+
+**Prioridades sugeridas para hoje:**
+- (da seção "Tomorrow" do daily)
+
+### 3. Verificar estado atual
+
+- Confirme que os arquivos de plano referenciados em `.claude/plans/` ainda existem
+- Rode `git status` e `git log --oneline -5` para mostrar estado do repo
+
+### 4. Perguntar
+
+"Qual tarefa quer pegar? Pode escolher da lista acima ou iniciar algo novo."
+
+**Aguarde a escolha do usuário antes de prosseguir.**

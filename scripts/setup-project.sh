@@ -232,6 +232,7 @@ add_to_gitignore() {
 add_to_gitignore ".claude/settings.local.json"
 add_to_gitignore ".claude/logs/"
 add_to_gitignore ".claude/plans/archive/"
+add_to_gitignore ".claude/dailies/"
 
 # =============================================================================
 # RESUMO E PRÓXIMOS PASSOS

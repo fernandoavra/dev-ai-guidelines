@@ -169,7 +169,7 @@ if (Test-Path $CursorHooksJson) {
 # =============================================================================
 
 $GitIgnore = Join-Path $ProjectDir ".gitignore"
-$entries = @(".claude/settings.local.json", ".claude/logs/", ".claude/plans/archive/")
+$entries = @(".claude/settings.local.json", ".claude/logs/", ".claude/plans/archive/", ".claude/dailies/")
 
 foreach ($entry in $entries) {
     $content = if (Test-Path $GitIgnore) { Get-Content $GitIgnore -Raw } else { "" }

@@ -1,10 +1,23 @@
 ---
-description: Registra handoff da sessão atual em active-plan.md antes de encerrar ou /clear
-allowed-tools: Read, Write, Edit, Bash
+description: Registra handoff da sessão atual antes de encerrar ou /clear — requer nome da tarefa
+argument-hint: <nome-da-tarefa>
+allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
+If $ARGUMENTS is empty, list existing handoff files in .claude/plans/ and ask
+the user to provide a task name. Do NOT proceed without a task name.
+
+Task name: $ARGUMENTS
+
+Sanitize the task name for use as filename: lowercase, replace spaces with
+hyphens, remove special characters. Example: "migrar auth para OAuth2" becomes
+"migrar-auth-para-oauth2".
+
 Before closing this session, create or update
-.claude/plans/active-plan.md with:
+.claude/plans/$TASK_NAME.md (where $TASK_NAME is the sanitized name) with:
+
+## Task: $ARGUMENTS
+## Date: (current date)
 
 ## State at close
 - What was completed (be specific: files changed, decisions made)
@@ -24,4 +37,6 @@ Before closing this session, create or update
 Then summarize in 3 sentences what someone — human or AI agent —
 needs to know to continue this work cold.
 
-Finally, output the git status so it's visible before the session closes.
+Finally, output the git status and confirm the file was saved at
+.claude/plans/$TASK_NAME.md so the user knows how to resume later with:
+  /ai:resume <nome-da-tarefa>

@@ -7,11 +7,21 @@ alwaysApply: false
 
 ## Quando usar
 
-Sempre antes de encerrar uma sessão de trabalho produtiva. O plano ativo é o único estado que sobrevive entre sessões.
+Sempre antes de encerrar uma sessão de trabalho produtiva. Cada tarefa é salva em seu próprio arquivo, permitindo múltiplas tarefas em andamento simultaneamente.
 
-## Processo
+## Passo 1 — Obter nome da tarefa
 
-Crie ou atualize `.cursor/plans/active-plan.md` (ou `.claude/plans/active-plan.md`) com:
+Pergunte ao usuário qual o nome da tarefa. Sanitize para uso como filename: lowercase, espaços viram hífens, remove caracteres especiais.
+Exemplo: "Migrar auth para OAuth2" → `migrar-auth-para-oauth2`
+
+Se o usuário não informar, liste os arquivos existentes em `.claude/plans/` e `.cursor/plans/` para contexto.
+
+## Passo 2 — Criar o arquivo de handoff
+
+Crie ou atualize `.claude/plans/<nome-da-tarefa>.md` com:
+
+### Task: (nome original da tarefa)
+### Date: (data atual)
 
 ### State at Close
 
@@ -37,6 +47,6 @@ O que alguém — humano ou IA — precisa saber para continuar este trabalho a 
 
 ## Notas
 
-- Se uma tarefa foi concluída totalmente, limpe o active-plan.md para a próxima
 - Sempre faça commit do trabalho concluído antes de encerrar a sessão
 - Se algo ficou pela metade, documente o estado exato
+- Ao final, confirme o arquivo salvo e informe que pode ser retomado com a rule "session-resume"
