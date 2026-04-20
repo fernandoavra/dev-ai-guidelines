@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="140" viewBox="0 0 820 140">
+  <defs>
+    <style>
+      @font-face { font-family: 'Mono'; }
+      .bg { fill: #1e1e2e; }
+      .cyan { fill: #89dceb; }
+      .green { fill: #a6e3a1; }
+      .yellow { fill: #f9e2af; }
+      .dim { fill: #6c7086; }
+      text { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace; font-size: 13px; }
+    </style>
+  </defs>
+  <rect class="bg" width="820" height="140" rx="8" ry="8"/>
+  <!-- Line 1: Model | token usage | free tokens -->
+  <text x="16" y="30">
+    <tspan class="cyan">Opus 4.6 (200.0k context)</tspan>
+    <tspan class="dim"> | </tspan>
+    <tspan class="cyan">45.2k / 200.0k (23% used)</tspan>
+    <tspan class="dim"> | </tspan>
+    <tspan class="cyan">154.8k 77% free</tspan>
+  </text>
+  <!-- Line 2: Rate limits + git branch -->
+  <text x="16" y="58">
+    <tspan class="cyan">current: </tspan>
+    <tspan class="green">●●●○○○○○○○ 30%</tspan>
+    <tspan class="dim"> | </tspan>
+    <tspan class="cyan">weekly: </tspan>
+    <tspan class="green">●○○○○○○○○○ 12%</tspan>
+    <tspan class="dim"> | </tspan>
+    <tspan class="yellow">  main</tspan>
+  </text>
+  <!-- Line 3: Reset times -->
+  <text x="16" y="86">
+    <tspan class="cyan">resets 5:42pm (3h15m)</tspan>
+    <tspan class="dim"> | </tspan>
+    <tspan class="cyan">resets Thu, 2:30pm</tspan>
+  </text>
+  <!-- Line 4: Permission mode -->
+  <text x="16" y="114">
+    <tspan class="yellow">►► auto mode on</tspan>
+    <tspan class="dim"> (shift+tab to cycle)</tspan>
+  </text>
+</svg>

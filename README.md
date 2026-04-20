@@ -158,6 +158,9 @@ O Cursor não tem slash commands com argumentos. Em vez disso, usa **rules** (`.
 
 ```
 dev-ai-guidelines/
+├── assets/
+│   └── statusline-preview.svg  # Preview visual da statusline
+│
 ├── scripts/                    # Setup automatizado (global + projeto)
 │   ├── setup-global.sh / .ps1  # Instala hooks, comandos e CLAUDE.md global
 │   ├── setup-project.sh / .ps1 # Instala hooks do projeto (commitável)
@@ -290,6 +293,7 @@ Executa uma vez por máquina. Instala recursos **pessoais** (nunca commitados):
 | Scripts Cursor (Node.js) | `~/.cursor/hooks/scripts/*.mjs` | startup-check, block-dangerous, session-log (cross-platform) |
 | hooks.json Cursor | `~/.cursor/hooks.json` | Registra hooks globais no Cursor |
 | Prompts | `~/.claude/prompts/` e `~/.cursor/prompts/` | Prompts referenciados pelos hooks |
+| Statusline | `~/.claude/statusline-command.sh` | Exibe modelo, contexto, rate limits, branch e modo de permissão |
 
 ### `setup-project.sh` / `setup-project.ps1`
 
@@ -304,6 +308,44 @@ Executa uma vez por projeto. Instala recursos **commitáveis** (valem para o tim
 | Scripts Cursor (Node.js) | `.cursor/hooks/scripts/*.mjs` | format-on-edit, require-tests (cross-platform) |
 | hooks.json Cursor | `.cursor/hooks.json` | Registra hooks de projeto no Cursor (afterFileEdit + beforeShellExecution) |
 | .gitignore | `.gitignore` | Adiciona `.claude/settings.local.json`, `.claude/logs/`, `.claude/plans/archive/`, `.claude/dailies/` |
+
+---
+
+## Statusline customizada
+
+O repositório inclui uma statusline para Claude Code que exibe informações úteis em tempo real na parte inferior do terminal.
+
+![Statusline Preview](assets/statusline-preview.svg)
+
+| Linha | Conteúdo |
+|---|---|
+| 1 | Modelo ativo, tamanho do contexto, tokens usados/restantes e percentual |
+| 2 | Rate limit atual (5h) e semanal (7d) com medidores visuais + branch git |
+| 3 | Horário de reset dos rate limits com tempo restante |
+| 4 | Modo de permissão ativo (auto, bypass, etc.) |
+
+### Instalação
+
+A statusline é configurada automaticamente pelo `setup-global.sh`. Para usar manualmente:
+
+```bash
+# Copie o script para ~/.claude/ (ou use o caminho do repo)
+cp .claude/statusline-command.sh ~/.claude/statusline-command.sh
+chmod +x ~/.claude/statusline-command.sh
+```
+
+No `settings.json` (global ou do projeto):
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  }
+}
+```
+
+> **Requisito:** o script depende de `jq` e `bc`. Instale com `brew install jq bc` (macOS) ou `apt install jq bc` (Linux).
 
 ---
 
