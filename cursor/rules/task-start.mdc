@@ -19,23 +19,77 @@ alwaysApply: false
 - Identifique dependências cross-componente (quais componentes são afetados)
 - Sinalize qualquer ambiguidade que requer decisão antes de prosseguir
 
-### 2. Apresente o plano
+### 2. Persista o plano
 
-Após a exploração, apresente:
+Sanitize o nome da tarefa para uso como filename: lowercase, espaços viram hífens, remove caracteres especiais, trunca em 50 chars. Exemplo: "Migrar auth para OAuth2" → `migrar-auth-para-oauth2`
 
+Crie `.cursor/plans/<nome-da-tarefa>.md` com:
+
+```
+# Task: (nome original da tarefa)
+
+**Started:** (data atual)
+**Status:** planning
+
+## Goal
+(uma frase clara descrevendo o que esta tarefa alcança)
+
+## Plan
+1. [passo] — justificativa
+2. [passo] — justificativa
+...
+
+## Files affected
+- `path/to/file` — motivo da mudança
+
+## Components involved
+- [componente] — papel nesta tarefa
+
+## Acceptance criteria
+- [ ] critério 1
+- [ ] critério 2
+
+## Risks and edge cases
+- [risco ou edge case]
+
+## Open questions
+- [pergunta que precisa de resposta]
+
+## Decision log
+| Date | Decision | Rationale | Impact |
+|------|----------|-----------|--------|
+| (date) | Plano inicial aprovado | — | — |
+
+---
+*last-updated: YYYY-MM-DD HH:MM*
+```
+
+### 3. Apresente e aguarde
+
+Apresente:
 1. **Plano de implementação** — passos, ordem, justificativa
 2. **Arquivos a criar ou modificar** — com motivo para cada
 3. **Riscos e edge cases** — o que pode dar errado
 4. **Perguntas que precisam de resposta** — antes de começar
 
-### 3. Aguarde aprovação
+Confirme que o plano foi salvo em `.cursor/plans/<nome-da-tarefa>.md`.
 
 **Não escreva nenhum código até o plano ser aprovado.**
 
 Se o plano revelar que mais de 3 arquivos em componentes diferentes são afetados, sinalize que este pode ser um caso para o workflow de feature cross-componente.
 
-### 4. Após aprovação
+### 4. Mantenha o plano vivo (CRÍTICO)
 
-- Implemente seguindo o plano aprovado
-- Se algo inesperado surgir durante a implementação, pare e comunique antes de divergir do plano
-- Atualize `.cursor/plans/active-plan.md` com o progresso
+Após aprovação e início da implementação, atualize `.cursor/plans/<nome-da-tarefa>.md` sempre que:
+- Uma decisão alterar o escopo ou abordagem original
+- Um novo arquivo for adicionado ou um planejado não for mais necessário
+- Um risco se materializar ou um novo risco for descoberto
+- Uma pergunta em aberto for respondida
+- Um passo for concluído (marque os acceptance criteria)
+- O status mudar (planning → in-progress → blocked → done)
+
+Para cada decisão que afete o escopo, adicione uma linha na tabela **Decision log**.
+
+Atualize o timestamp **last-updated** a cada escrita.
+
+Se algo inesperado surgir durante a implementação, pare e comunique antes de divergir do plano.

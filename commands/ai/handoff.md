@@ -4,7 +4,7 @@ argument-hint: <nome-da-tarefa>
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
-If $ARGUMENTS is empty, list existing handoff files in .claude/plans/ and ask
+If $ARGUMENTS is empty, list existing plan files in .claude/plans/ and ask
 the user to provide a task name. Do NOT proceed without a task name.
 
 Task name: $ARGUMENTS
@@ -13,30 +13,51 @@ Sanitize the task name for use as filename: lowercase, replace spaces with
 hyphens, remove special characters. Example: "migrar auth para OAuth2" becomes
 "migrar-auth-para-oauth2".
 
-Before closing this session, create or update
-.claude/plans/$TASK_NAME.md (where $TASK_NAME is the sanitized name) with:
+## Step 1 — Check for existing plan
 
-## Task: $ARGUMENTS
-## Date: (current date)
+Look for .claude/plans/$TASK_NAME.md (created by /ai:task).
 
-## State at close
-- What was completed (be specific: files changed, decisions made)
-- What is in progress (exact state, not "working on X")
-- What is blocked and why
+**If the plan file exists:**
+- Read it — it already contains the goal, plan, decisions, and progress.
+- Update the existing file by adding/refreshing the handoff sections below.
+- Do NOT duplicate information already present in the plan.
 
-## Next session start
-- First command to run to verify state
-- First task to pick up (specific enough to start without extra context)
-- Context that must NOT be lost (decisions, constraints discovered)
+**If the plan file does NOT exist:**
+- Create .claude/plans/$TASK_NAME.md from scratch with full context.
 
-## Risks open
-- Anything fragile or incomplete that needs attention
-- Tests not yet written for code already merged
-- Decisions deferred that will affect next steps
+## Step 2 — Add handoff sections
 
-Then summarize in 3 sentences what someone — human or AI agent —
-needs to know to continue this work cold.
+Append or update these sections in the plan file:
 
-Finally, output the git status and confirm the file was saved at
+```
+## Handoff — (current date)
+
+### Status at close
+- **Completed:** (specific: files changed, decisions made, criteria met)
+- **In progress:** (exact state — not "working on X", but "function Y in file Z implemented up to step 3")
+- **Blocked:** (what and why, or "nothing blocked")
+
+### Next session start
+- **First command to run:** (to verify state)
+- **First task to pick up:** (specific enough to start without extra context)
+- **Context that must NOT be lost:**
+  - (decision or constraint 1)
+  - (decision or constraint 2)
+
+### Open risks
+- (anything fragile or incomplete)
+- (tests not yet written for code already merged)
+- (decisions deferred that will affect next steps)
+
+### Resume summary
+(3 sentences: what someone — human or AI — needs to know to continue cold)
+```
+
+Update **Status** to the appropriate value (in-progress, blocked, paused).
+Update **last-updated** timestamp.
+
+## Step 3 — Confirm
+
+Output the git status and confirm the file was saved at
 .claude/plans/$TASK_NAME.md so the user knows how to resume later with:
-  /ai:resume <nome-da-tarefa>
+  /ai:resume $ARGUMENTS

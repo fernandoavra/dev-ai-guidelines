@@ -1,7 +1,8 @@
 # Prompt 04 — Início de Tarefa
 
 **Quando usar:** Antes de qualquer implementação, sem exceção.  
-**Regra:** Nunca pular para código sem aprovação explícita do plano.
+**Regra:** Nunca pular para código sem aprovação explícita do plano.  
+**Resultado:** `.claude/plans/<nome-da-tarefa>.md` criado com o plano inicial.
 
 ---
 
@@ -22,13 +23,16 @@ Acceptance criteria:
 - [critério 2]
 - [critério 3]
 
-After the exploration, present:
-1. Implementation plan (steps, order, rationale)
-2. Files to be created or modified (with reason for each)
-3. Risks and edge cases
-4. Questions that need answers before starting
+After the exploration:
+1. Save the plan to .claude/plans/<task-name>.md (sanitize name: lowercase,
+   hyphens, no special chars) with: goal, steps, files affected, components,
+   acceptance criteria, risks, open questions, and an empty decision log table.
+2. Present the plan for approval.
+3. Wait for my approval before writing any code.
 
-Wait for my approval before writing any code.
+During implementation, update the plan file whenever a decision changes
+the scope, a file is added/removed, a risk materializes, or a question
+is answered. Append scope-affecting decisions to the Decision log table.
 ```
 
 ---
@@ -38,3 +42,4 @@ Wait for my approval before writing any code.
 - Preencha a tarefa e os critérios de aceite antes de rodar
 - Se Claude começar a codar sem aprovação, interrompa e reforce o plano primeiro
 - Se houver mais de 3 arquivos afetados em componentes diferentes, use o **Prompt 06**
+- O arquivo de plano facilita o handoff (Prompt 05) — ele já contem o histórico de decisões

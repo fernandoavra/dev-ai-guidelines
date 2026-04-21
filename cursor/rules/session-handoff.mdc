@@ -14,39 +14,53 @@ Sempre antes de encerrar uma sessão de trabalho produtiva. Cada tarefa é salva
 Pergunte ao usuário qual o nome da tarefa. Sanitize para uso como filename: lowercase, espaços viram hífens, remove caracteres especiais.
 Exemplo: "Migrar auth para OAuth2" → `migrar-auth-para-oauth2`
 
-Se o usuário não informar, liste os arquivos existentes em `.claude/plans/` e `.cursor/plans/` para contexto.
+Se o usuário não informar, liste os arquivos existentes em `.cursor/plans/` e `.claude/plans/` para contexto.
 
-## Passo 2 — Criar o arquivo de handoff
+## Passo 2 — Verificar plano existente
 
-Crie ou atualize `.claude/plans/<nome-da-tarefa>.md` com:
+Procure por `.cursor/plans/<nome-da-tarefa>.md` (criado pelo workflow task-start).
 
-### Task: (nome original da tarefa)
-### Date: (data atual)
+**Se o plano existir:**
+- Leia o arquivo — ele já contém goal, plano, decisões e progresso.
+- Atualize o arquivo existente adicionando/atualizando as seções de handoff abaixo.
+- NÃO duplique informações já presentes no plano.
 
-### State at Close
+**Se o plano NÃO existir:**
+- Crie `.cursor/plans/<nome-da-tarefa>.md` do zero com contexto completo.
+
+## Passo 3 — Adicionar seções de handoff
+
+Adicione ou atualize estas seções no arquivo:
+
+### Handoff — (data atual)
+
+#### Status at Close
 
 - **Concluído:** o que foi completado (seja específico: arquivos alterados, decisões tomadas)
 - **Em progresso:** estado exato (não "trabalhando em X", mas "função Y em arquivo Z implementada até o passo 3")
-- **Bloqueado:** o que está bloqueado e por quê
+- **Bloqueado:** o que está bloqueado e por quê (ou "nada bloqueado")
 
-### Next Session Start
+#### Next Session Start
 
 - **Primeiro comando a rodar:** para verificar o estado
 - **Primeira tarefa a pegar:** específica o suficiente para começar sem contexto adicional
 - **Contexto que NÃO pode ser perdido:** decisões, constraints descobertas
 
-### Risks Open
+#### Open Risks
 
 - Algo frágil ou incompleto que precisa de atenção
 - Testes não escritos para código já commitado
 - Decisões adiadas que afetarão próximos passos
 
-### Resumo em 3 frases
+#### Resume summary
 
-O que alguém — humano ou IA — precisa saber para continuar este trabalho a frio.
+O que alguém — humano ou IA — precisa saber para continuar este trabalho a frio, em 3 frases.
 
-## Notas
+Atualize **Status** para o valor apropriado (in-progress, blocked, paused).
+Atualize o timestamp **last-updated**.
+
+## Passo 4 — Confirmar
 
 - Sempre faça commit do trabalho concluído antes de encerrar a sessão
 - Se algo ficou pela metade, documente o estado exato
-- Ao final, confirme o arquivo salvo e informe que pode ser retomado com a rule "session-resume"
+- Confirme o arquivo salvo e informe que pode ser retomado com a rule "session-resume"
