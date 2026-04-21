@@ -91,6 +91,23 @@ Nunca pule da exploração direto para a implementação sem aprovação do plan
 - Em caso de dúvida sobre escopo de uma ação, perguntar antes de agir
 
 ---
+
+## Padrão de Idioma
+
+Todos os projetos seguem esta convenção de idioma para arquivos de configuração de IA:
+
+| Tipo de arquivo | Idioma | Exemplos |
+|----------------|--------|----------|
+| **user-facing** (lidos por humanos) | **PT-BR** | `CLAUDE.md`, `AGENTS.md`, `PROJECT.md`, `README.md`, `docs/` |
+| **claude-exclusive** (consumidos apenas por agentes) | **English** | `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`, `.claude/plans/` |
+
+**Regras:**
+- Arquivos user-facing devem ser escritos em PT-BR sem acentos (padrao: "nao", "eh", "funcao")
+- Arquivos claude-exclusive devem ser escritos em inglês — traduzir para PT-BR reduz a qualidade das instruções para o modelo
+- Termos técnicos (middleware, observer, broadcast, cache, queue, IPC) permanecem em inglês em ambos os casos
+- Nomes de arquivos, paths, comandos, código e variáveis nunca são traduzidos
+
+---
 <!-- Gerenciado por dev-ai-guidelines — não editar manualmente -->
 <!-- Atualizar rodando: dev-ai-guidelines/scripts/setup-global.sh -->
-version: 1.0
+version: 1.1
