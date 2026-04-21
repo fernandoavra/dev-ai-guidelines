@@ -11,14 +11,20 @@ Steps:
 1. Determine today's date (YYYY-MM-DD format).
 
 2. Gather information from multiple sources (in parallel when possible):
-   a. Read ALL .md files in .claude/plans/ to understand active tasks
-      and their current state (completed, in progress, blocked).
-   b. Run `git log --oneline --since="today 00:00" --author="$(git config user.name)"` 
+   a. Read ALL .md files in .claude/plans/ (excluding archive/) to understand
+      active tasks and their current state (completed, in progress, blocked).
+   b. Run `git log --oneline --since="today 00:00" --author="$(git config user.name)"`
       to see today's commits.
    c. Run `git diff --stat HEAD~10..HEAD` (or appropriate range) to understand
       scope of changes.
 
-3. Create .claude/dailies/YYYY-MM-DD.md with this structure:
+3. Extract decisions from plan files:
+   For each active plan file that has a **Decision log** table, check for
+   entries dated today. Include significant decisions in the daily summary
+   under a dedicated section — this provides a quick view of what changed
+   strategically, not just what code was written.
+
+4. Create .claude/dailies/YYYY-MM-DD.md with this structure:
 
 ```markdown
 # Daily — YYYY-MM-DD
@@ -28,6 +34,9 @@ Steps:
 
 ## In progress
 - (list of tasks still open, with current status — reference the plan file)
+
+## Decisions made today
+- [task-name]: (decision and rationale, 1 line — from plan decision logs)
 
 ## Blocked
 - (anything blocked and why — only if applicable)
@@ -39,12 +48,12 @@ Steps:
 - (suggested priorities for next day, based on what's in progress and blocked)
 ```
 
-4. Keep it concise — max 3-5 items per section. This is a summary, not a log.
+5. Keep it concise — max 3-5 items per section. This is a summary, not a log.
    Do NOT duplicate full handoff content. Reference plan files instead:
    "Migrar auth → see plans/migrar-auth-oauth2.md"
 
-5. If there are tasks in .claude/plans/ that were NOT touched today,
+6. If there are tasks in .claude/plans/ that were NOT touched today,
    do NOT include them unless they are blocked.
 
-6. Output the summary to the user and confirm the file was saved.
+7. Output the summary to the user and confirm the file was saved.
    Suggest: "Tomorrow, run /ai:daily-start to pick up where you left off."

@@ -16,9 +16,16 @@ Exemplo: "Migrar auth para OAuth2" → `migrar-auth-para-oauth2`
 
 Se o usuário não informar, liste os arquivos existentes em `.cursor/plans/` e `.claude/plans/` para contexto.
 
-## Passo 2 — Verificar plano existente
+## Passo 2 — Verificar commits pendentes
 
-Procure por `.cursor/plans/<nome-da-tarefa>.md` (criado pelo workflow task-start).
+Antes de tudo, verifique se há mudanças não commitadas relacionadas à tarefa.
+Se houver staged ou unstaged changes:
+- Informe o usuário e sugira commitar antes de prosseguir.
+- Aguarde o usuário commitar ou dizer explicitamente para prosseguir sem commit.
+
+## Passo 3 — Verificar plano existente
+
+Procure por `.cursor/plans/<nome-da-tarefa>.md` (criado pelo workflow task-start ou cross-component-feature).
 
 **Se o plano existir:**
 - Leia o arquivo — ele já contém goal, plano, decisões e progresso.
@@ -28,7 +35,7 @@ Procure por `.cursor/plans/<nome-da-tarefa>.md` (criado pelo workflow task-start
 **Se o plano NÃO existir:**
 - Crie `.cursor/plans/<nome-da-tarefa>.md` do zero com contexto completo.
 
-## Passo 3 — Adicionar seções de handoff
+## Passo 4 — Adicionar seções de handoff
 
 Adicione ou atualize estas seções no arquivo:
 
@@ -59,8 +66,13 @@ O que alguém — humano ou IA — precisa saber para continuar este trabalho a 
 Atualize **Status** para o valor apropriado (in-progress, blocked, paused).
 Atualize o timestamp **last-updated**.
 
-## Passo 4 — Confirmar
+## Passo 5 — Arquivar se concluído
 
-- Sempre faça commit do trabalho concluído antes de encerrar a sessão
-- Se algo ficou pela metade, documente o estado exato
+Se a tarefa está "done" (todos os acceptance criteria atendidos):
+- Mova o arquivo para `.cursor/plans/archive/<nome-da-tarefa>.md`
+- Crie o diretório archive/ se não existir
+- Informe o usuário que a tarefa foi arquivada
+
+## Passo 6 — Confirmar
+
 - Confirme o arquivo salvo e informe que pode ser retomado com a rule "session-resume"

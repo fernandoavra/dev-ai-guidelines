@@ -13,39 +13,71 @@ alwaysApply: false
 
 ### 1. Design do contrato (antes de qualquer implementação)
 
+Sanitize o nome da feature para uso como filename: lowercase, espaços viram hífens, remove caracteres especiais, trunca em 50 chars.
+
 Adote o papel de arquiteto e:
 - Projete o contrato entre componentes primeiro
 - Defina schema de API, formato de eventos ou tipos compartilhados
-- Salve em `.cursor/plans/[nome-da-feature]-contract.md`
+- Salve em `.cursor/plans/<nome-da-feature>.md` com a estrutura abaixo
 - **Aguarde aprovação antes de prosseguir**
 
-Formato do contrato:
+Formato do arquivo de plano:
+
 ```markdown
-# Contract: [Nome da Feature]
+# Feature: (nome original da feature)
 
-## Resumo
-[O que este contrato define e por quê]
+**Started:** (data atual)
+**Status:** contract-design
 
-## Componentes envolvidos
-- [componente]: [papel nesta feature]
+## Goal
+(uma frase clara descrevendo o que esta feature alcança)
 
-## Definições de interface
-[Schema de API, formato de eventos, tipos compartilhados]
+## Contract
 
-## Restrições
-[O que deve ser verdade em todas as implementações]
+### Components involved
+- [componente] — papel nesta feature
 
-## Ordem de implementação
-[Sequencial ou paralelo — seja explícito]
+### Interface definitions
+(schema de API, formato de eventos, tipos compartilhados)
 
-## Questões em aberto
-[Decisões que precisam de input humano]
+### Constraints
+(o que deve ser verdade em todas as implementações)
+
+### Implementation order
+(sequencial ou paralelo — seja explícito sobre dependências)
+
+## Plan
+1. [passo] — justificativa
+2. [passo] — justificativa
+
+## Files affected
+- `path/to/file` — motivo da mudança
+
+## Acceptance criteria
+- [ ] critério 1
+- [ ] critério 2
+
+## Risks and edge cases
+- [risco ou edge case]
+
+## Open questions
+- [pergunta que precisa de resposta]
+
+## Decision log
+| Date | Decision | Rationale | Impact |
+|------|----------|-----------|--------|
+| (date) | Contrato desenhado | — | — |
+
+---
+*last-updated: YYYY-MM-DD HH:MM*
 ```
 
 ### 2. Após aprovação do contrato
 
+Atualize o status para "in-progress" e adicione no decision log: "Contrato aprovado — implementação iniciada".
+
 Implemente componente por componente:
-- Cada implementação deve ler e seguir o contrato
+- Cada implementação deve ler e seguir o contrato em `.cursor/plans/<nome-da-feature>.md`
 - Comece pelo componente que define a interface (geralmente o backend/API)
 - Implemente os consumidores contra o contrato definido
 
@@ -54,7 +86,21 @@ Implemente componente por componente:
 - Revise se todas as implementações seguem o contrato
 - Escreva testes de integração cobrindo o fluxo cross-componente completo
 
-### 4. Se o escopo crescer
+### 4. Mantenha o plano vivo (CRÍTICO)
+
+Atualize `.cursor/plans/<nome-da-feature>.md` sempre que:
+- Uma decisão alterar o contrato ou abordagem
+- Uma implementação desviar do contrato (documente por quê)
+- Um novo arquivo for adicionado ou um planejado não for mais necessário
+- Um risco se materializar ou um novo risco for descoberto
+- Uma pergunta em aberto for respondida
+- Um passo for concluído (marque os acceptance criteria)
+- O status mudar (contract-design → in-progress → review → done)
+
+Para cada decisão que afete o escopo, adicione uma linha na tabela **Decision log**.
+Atualize o timestamp **last-updated** a cada escrita.
+
+### 5. Se o escopo crescer
 
 Se durante o design o contrato revelar que a feature é maior que o esperado:
 - Comunique claramente

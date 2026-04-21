@@ -21,6 +21,10 @@ Before writing any code, use subagents to:
 Acceptance criteria:
 (infer from task context or ask if unclear)
 
+**Cross-component check:** If the exploration reveals that more than 3 files
+across different components are affected, flag this to the user and suggest
+using /ai:feature instead. Wait for the user to decide before proceeding.
+
 ## Step 2 — Plan and persist
 
 Sanitize $ARGUMENTS for use as filename: lowercase, replace spaces with

@@ -20,6 +20,8 @@ Antes de investigar, confirme:
 - **Frequência:** sempre, intermitente, sob condição específica?
 - **Mudanças recentes:** últimos commits ou deploys relevantes?
 
+Se a descrição já contiver essas informações, extraia. Caso contrário, pergunte antes de prosseguir. NÃO pule este passo.
+
 ### 2. Investigação (não sugira fix ainda)
 
 1. Trace o caminho completo de execução do trigger até o ponto de falha
@@ -47,9 +49,15 @@ Risco do fix: [o que mais pode ser afetado]
 Testes a adicionar: [para prevenir regressão]
 ```
 
+Aguarde aprovação antes de implementar o fix.
+
+### 5. Pós-resolução (após o fix ser aplicado)
+
+- Se existe um arquivo de plano ativo em `.cursor/plans/` ou `.claude/plans/`, adicione o bug ao **Decision log** com causa e correção
+- Se o bug revelou ausência de testes, adicione ao backlog de tech debt
+- Se o bug é uma regressão, verifique o teste que deveria ter capturado e adicione um se estiver faltando
+
 ## Notas
 
 - Quanto mais contexto no preenchimento, melhor o diagnóstico
 - Se o bug é em produção e urgente, ainda assim faça o diagnóstico — um fix errado piora
-- Após resolver, documente causa e correção no Decision Log do PROJECT.md
-- Se o bug revelou ausência de testes, adicione ao backlog de tech debt

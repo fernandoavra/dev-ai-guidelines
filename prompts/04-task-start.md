@@ -23,6 +23,10 @@ Acceptance criteria:
 - [critério 2]
 - [critério 3]
 
+Cross-component check: If more than 3 files across different components
+are affected, flag this and suggest using the cross-component feature
+workflow (Prompt 06) instead. Wait for my decision before proceeding.
+
 After the exploration:
 1. Save the plan to .claude/plans/<task-name>.md (sanitize name: lowercase,
    hyphens, no special chars) with: goal, steps, files affected, components,
@@ -42,4 +46,4 @@ is answered. Append scope-affecting decisions to the Decision log table.
 - Preencha a tarefa e os critérios de aceite antes de rodar
 - Se Claude começar a codar sem aprovação, interrompa e reforce o plano primeiro
 - Se houver mais de 3 arquivos afetados em componentes diferentes, use o **Prompt 06**
-- O arquivo de plano facilita o handoff (Prompt 05) — ele já contem o histórico de decisões
+- O arquivo de plano facilita o handoff (Prompt 05) — ele já contém o histórico de decisões

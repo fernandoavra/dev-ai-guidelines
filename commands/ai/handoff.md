@@ -13,9 +13,16 @@ Sanitize the task name for use as filename: lowercase, replace spaces with
 hyphens, remove special characters. Example: "migrar auth para OAuth2" becomes
 "migrar-auth-para-oauth2".
 
-## Step 1 — Check for existing plan
+## Step 1 — Commit check
 
-Look for .claude/plans/$TASK_NAME.md (created by /ai:task).
+Before anything else, check if there are uncommitted changes related to this task.
+If there are staged or unstaged changes:
+- Inform the user and suggest committing before proceeding.
+- Wait for the user to commit or explicitly say to proceed without committing.
+
+## Step 2 — Check for existing plan
+
+Look for .claude/plans/$TASK_NAME.md (created by /ai:task or /ai:feature).
 
 **If the plan file exists:**
 - Read it — it already contains the goal, plan, decisions, and progress.
@@ -25,7 +32,7 @@ Look for .claude/plans/$TASK_NAME.md (created by /ai:task).
 **If the plan file does NOT exist:**
 - Create .claude/plans/$TASK_NAME.md from scratch with full context.
 
-## Step 2 — Add handoff sections
+## Step 3 — Add handoff sections
 
 Append or update these sections in the plan file:
 
@@ -56,8 +63,16 @@ Append or update these sections in the plan file:
 Update **Status** to the appropriate value (in-progress, blocked, paused).
 Update **last-updated** timestamp.
 
-## Step 3 — Confirm
+## Step 4 — Archive if done
+
+If the task status is "done" (all acceptance criteria met):
+- Move the plan file to .claude/plans/archive/$TASK_NAME.md
+- Create the archive/ directory if it does not exist.
+- Inform the user the task was archived.
+
+## Step 5 — Confirm
 
 Output the git status and confirm the file was saved at
-.claude/plans/$TASK_NAME.md so the user knows how to resume later with:
+.claude/plans/$TASK_NAME.md (or .claude/plans/archive/$TASK_NAME.md if archived)
+so the user knows how to resume later with:
   /ai:resume $ARGUMENTS

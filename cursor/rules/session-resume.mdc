@@ -11,7 +11,7 @@ Ao iniciar uma nova sessão querendo continuar uma tarefa que foi salva anterior
 
 ## Passo 1 — Identificar a tarefa
 
-Pergunte ao usuário qual tarefa deseja retomar. Se não souber o nome, liste todos os arquivos `.md` em `.claude/plans/` e `.cursor/plans/`:
+Pergunte ao usuário qual tarefa deseja retomar. Se não souber o nome, liste todos os arquivos `.md` em `.cursor/plans/` e `.claude/plans/` (ambos os diretórios):
 
 Para cada arquivo encontrado, leia as primeiras 10 linhas e extraia o nome da tarefa e a data. Apresente uma tabela numerada:
 
@@ -26,12 +26,14 @@ Aguarde a escolha do usuário antes de prosseguir.
 
 ## Passo 2 — Carregar o estado
 
-Leia `.claude/plans/<nome-da-tarefa>.md` e apresente um resumo:
+Leia o arquivo de plano correspondente. Procure primeiro em `.cursor/plans/`, depois em `.claude/plans/` (respeite a ordem para evitar inconsistências de path).
 
+Apresente um resumo:
 - O que foi concluído
 - O que estava em progresso
 - O que estava bloqueado
 - Quais eram os próximos passos
+- Decisões relevantes do Decision log (se existir)
 
 ## Passo 3 — Verificar estado atual
 

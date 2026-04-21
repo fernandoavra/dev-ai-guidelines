@@ -13,11 +13,15 @@ No final do expediente, para registrar o progresso do dia. O resumo diário comp
 
 ### 1. Coletar informações
 
-- Leia todos os arquivos `.md` em `.claude/plans/` para entender as tarefas ativas
+- Leia todos os arquivos `.md` em `.cursor/plans/` e `.claude/plans/` (excluindo archive/) para entender as tarefas ativas
 - Rode `git log --oneline --since="today 00:00"` para ver os commits do dia
 - Rode `git diff --stat` para entender o escopo das mudanças
 
-### 2. Criar o resumo diário
+### 2. Extrair decisões dos planos
+
+Para cada plano ativo que tenha uma tabela **Decision log**, verifique se há entradas datadas de hoje. Decisões significativas devem aparecer no daily — isso dá uma visão rápida do que mudou estrategicamente, não apenas qual código foi escrito.
+
+### 3. Criar o resumo diário
 
 Crie `.claude/dailies/YYYY-MM-DD.md` com:
 
@@ -30,6 +34,9 @@ Crie `.claude/dailies/YYYY-MM-DD.md` com:
 ## In progress
 - (tarefas ainda abertas — referenciar o arquivo do plano)
 
+## Decisions made today
+- [nome-da-tarefa]: (decisão e justificativa, 1 linha — dos decision logs dos planos)
+
 ## Blocked
 - (o que está bloqueado e por quê)
 
@@ -40,12 +47,12 @@ Crie `.claude/dailies/YYYY-MM-DD.md` com:
 - (prioridades sugeridas para o dia seguinte)
 ```
 
-### 3. Regras
+### 4. Regras
 
 - Max 3-5 items por seção — é um resumo, não um log
 - NÃO duplique conteúdo dos handoffs — referencie os arquivos
 - Só inclua tarefas que foram tocadas hoje ou estão bloqueadas
 
-### 4. Informar
+### 5. Informar
 
 Confirme o arquivo salvo e sugira usar a rule "daily-start" no dia seguinte.

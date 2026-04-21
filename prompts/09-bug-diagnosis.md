@@ -37,6 +37,13 @@ Why it worked before (if regression): [what changed]
 Proposed fix: [specific changes, not vague suggestions]
 Risk of fix: [what else might be affected]
 Tests to add: [to prevent regression]
+
+Wait for approval before implementing the fix.
+
+After the fix is applied:
+- If an active plan file exists, append the bug to its Decision log
+- If missing test coverage was revealed, note it for tech debt backlog
+- If this is a regression, verify and add the missing test
 ```
 
 ---
@@ -45,5 +52,5 @@ Tests to add: [to prevent regression]
 
 - Quanto mais contexto no preenchimento, melhor o diagnóstico
 - Se o bug for em produção e urgente, ainda assim faça o diagnóstico — um fix errado piora
-- Após resolver, documente a causa e a correção no Decision Log do PROJECT.md
+- Após resolver, documente a causa e a correção no Decision Log do plano ativo
 - Se o bug revelou ausência de testes, adicione ao backlog de tech debt
