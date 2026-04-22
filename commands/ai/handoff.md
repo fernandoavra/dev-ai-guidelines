@@ -4,10 +4,20 @@ argument-hint: <nome-da-tarefa>
 allowed-tools: Read, Write, Edit, Bash, Glob
 ---
 
-If $ARGUMENTS is empty, list existing plan files in .claude/plans/ and ask
-the user to provide a task name. Do NOT proceed without a task name.
+If $ARGUMENTS is empty, try to detect the active task for this session:
 
-Task name: $ARGUMENTS
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] && jq -r --arg pid "$PPID" '.[$pid].task // empty' "$FILE"
+```
+
+- If a task name is returned, use it and inform the user:
+  "Detected active task: <name>. Proceeding."
+- If no task is detected, list existing plan files in .claude/plans/
+  and ask the user to provide a task name.
+  Do NOT proceed without a task name.
+
+Task name: $ARGUMENTS (or detected from session)
 
 Sanitize the task name for use as filename: lowercase, replace spaces with
 hyphens, remove special characters. Example: "migrar auth para OAuth2" becomes

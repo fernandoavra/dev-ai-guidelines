@@ -11,10 +11,18 @@ Quando uma tarefa foi completada e você quer marcá-la formalmente como conclu�
 
 ## Passo 1 — Obter nome da tarefa
 
-Pergunte ao usuário qual o nome da tarefa. Sanitize para uso como filename: lowercase, espaços viram hífens, remove caracteres especiais.
-Exemplo: "Migrar auth para OAuth2" → `migrar-auth-para-oauth2`
+Primeiro, tente detectar a tarefa ativa desta sessão:
 
-Se o usuário não informar, liste os arquivos existentes em `.cursor/plans/` e `.claude/plans/` (excluindo `archive/`) para contexto.
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] && jq -r --arg pid "$PPID" '.[$pid].task // empty' "$FILE"
+```
+
+- Se retornar um nome, use-o e informe: "Tarefa ativa detectada: <nome>. Prosseguindo."
+- Se não retornar, pergunte ao usuário. Se ainda não informar, liste os arquivos em `.cursor/plans/` e `.claude/plans/` (excluindo `archive/`) para contexto.
+
+Sanitize para uso como filename: lowercase, espaços viram hífens, remove caracteres especiais.
+Exemplo: "Migrar auth para OAuth2" → `migrar-auth-para-oauth2`
 
 ## Passo 2 — Localizar o plano
 
