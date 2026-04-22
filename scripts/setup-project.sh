@@ -233,6 +233,7 @@ add_to_gitignore ".claude/settings.local.json"
 add_to_gitignore ".claude/logs/"
 add_to_gitignore ".claude/plans/archive/"
 add_to_gitignore ".claude/dailies/"
+add_to_gitignore ".claude/plans/.active-sessions.json"
 
 # =============================================================================
 # RESUMO E PRÓXIMOS PASSOS

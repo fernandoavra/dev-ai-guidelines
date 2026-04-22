@@ -36,7 +36,7 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 | O que | Onde | Descrição |
 |---|---|---|
 | `CLAUDE.md` global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente para todos os projetos |
-| Comandos `/ai:*` | `~/.claude/commands/ai/` | 13 comandos prontos em qualquer projeto |
+| Comandos `/ai:*` | `~/.claude/commands/ai/` | 16 comandos prontos em qualquer projeto |
 | Hooks Claude Code | `~/.claude/settings.json` | startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, session-log |
 | Hooks Cursor | `~/.cursor/hooks.json` | startup-check, block-dangerous, session-log |
 | Scripts | `~/.claude/hooks/` e `~/.cursor/hooks/scripts/` | Scripts shell e Node.js |
@@ -61,6 +61,8 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 | `/ai:docs` | Gera ou atualiza `PROJECT.md` |
 | `/ai:ask <pergunta>` | Responde perguntas sobre o projeto com base na documentação — sem escanear o codebase |
 | `/ai:task <descrição>` | Início de qualquer tarefa — plano antes do código |
+| `/ai:task-finish <nome>` | Marca tarefa como concluída — resumo final e arquiva o plano |
+| `/ai:task-delete <nome>` | Descarta tarefa que não será executada — remove ou arquiva com motivo |
 | `/ai:handoff <nome-da-tarefa>` | Salva estado de uma tarefa antes de `/clear` ou encerrar |
 | `/ai:resume [nome-da-tarefa]` | Retoma tarefa salva — lista disponíveis se nome omitido |
 | `/ai:daily-close` | Final do dia — gera resumo do progresso e pendências |
@@ -110,7 +112,7 @@ Hooks são scripts que disparam automaticamente em eventos do Claude Code ou Cur
 | **post-compact** | `SessionStart` (compact) | Após `/compact`, reinjecta o plano ativo (`.claude/plans/`) e orienta o Claude a se recontextualizar. Evita que compactação cause perda de direção. |
 | **post-clear-orient** | `SessionStart` (clear) | Após `/clear`, reinjecta os próximos passos do handoff anterior para que o Claude saiba de onde continuar sem precisar perguntar. |
 | **block-dangerous** | `PreToolUse` (Bash) | Bloqueia comandos destrutivos (`rm -rf /`, `drop database`, `git push --force`, etc.) antes da execução. Atua como rede de segurança em qualquer projeto. |
-| **session-log** | `Stop` | Registra fim de sessão com timestamp em `.claude/logs/sessions.log` e envia notificação desktop (macOS/Linux). Útil para rastreabilidade. |
+| **session-log** | `Stop` | Registra fim de sessão com timestamp em `.claude/logs/sessions.log`, limpa registro de tarefa ativa e envia notificação desktop (macOS/Linux). |
 
 ### Hooks por projeto (instalados por `setup-project`)
 
@@ -144,6 +146,8 @@ O Cursor não tem slash commands com argumentos. Em vez disso, usa **rules** (`.
 | `/ai:update` | `gap-analysis.mdc` | Manual |
 | `/ai:docs` | `project-documentation.mdc` | Manual |
 | `/ai:task` | `task-start.mdc` | Manual |
+| `/ai:task-finish` | `task-finish.mdc` | Manual — pede nome da tarefa |
+| `/ai:task-delete` | `task-delete.mdc` | Manual — pede nome da tarefa |
 | `/ai:handoff` | `session-handoff.mdc` | Manual — pede nome da tarefa |
 | `/ai:resume` | `session-resume.mdc` | Manual — lista tarefas se nome omitido |
 | `/ai:daily-close` | `daily-close.mdc` | Manual |
@@ -180,7 +184,8 @@ dev-ai-guidelines/
 │
 ├── commands/ai/                # Comandos /ai:* para Claude Code
 │   ├── setup.md   update.md   docs.md   add.md   ask.md
-│   ├── task.md    handoff.md  resume.md
+│   ├── task.md    task-finish.md  task-delete.md
+│   ├── handoff.md  resume.md
 │   ├── daily-close.md  daily-start.md
 │   ├── review.md  debt.md    bug.md    feature.md
 │
@@ -204,6 +209,8 @@ dev-ai-guidelines/
 ├── cursor/rules/               # Cursor Rules — equivalentes dos /ai:*
 │   ├── session-handoff.mdc     # Handoff com nome de tarefa
 │   ├── session-resume.mdc      # Retomada de tarefa salva
+│   ├── task-finish.mdc         # Conclusão formal de tarefa
+│   ├── task-delete.mdc         # Descarte de tarefa não executada
 │   ├── daily-close.mdc         # Resumo de final do dia
 │   ├── daily-start.mdc         # Briefing de início do dia
 │   ├── task-start.mdc          # Início de tarefa com plano
@@ -280,6 +287,8 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks"
 Manhã    → /ai:daily-start → briefing do dia anterior → escolha tarefa
 Tarefa   → /ai:resume <nome> ou /ai:task <nova>
 PR       → /ai:review antes de abrir
+Concluiu → /ai:task-finish <nome> → arquiva o plano
+Desistiu → /ai:task-delete <nome> → descarta com motivo
 Pausa    → /ai:handoff <nome-da-tarefa> → /clear
 Fim dia  → /ai:daily-close → resumo do dia salvo
 Quinzenal → /ai:debt
@@ -299,7 +308,7 @@ Executa uma vez por máquina. Instala recursos **pessoais** (nunca commitados):
 | Recurso | Destino | Detalhes |
 |---|---|---|
 | CLAUDE.md global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente, gerenciamento de contexto, fluxo de trabalho padrão e regras de segurança |
-| Comandos `/ai:*` (14) | `~/.claude/commands/ai/*.md` | setup, update, docs, ask, task, handoff, resume, daily-close, daily-start, review, debt, bug, feature, add |
+| Comandos `/ai:*` (16) | `~/.claude/commands/ai/*.md` | setup, update, docs, ask, task, task-finish, task-delete, handoff, resume, daily-close, daily-start, review, debt, bug, feature, add |
 | Hook: startup-check | `~/.claude/hooks/startup-check.sh` | Dispara em `SessionStart`(startup) — detecta projeto sem CLAUDE.md |
 | Hook: intercept-clear | `~/.claude/hooks/intercept-clear.sh` | Dispara em `UserPromptSubmit` — intercepta `/clear` e força handoff |
 | Hook: post-compact | `~/.claude/hooks/post-compact.sh` | Dispara em `SessionStart`(compact) — reinjecta plano ativo |
@@ -310,7 +319,7 @@ Executa uma vez por máquina. Instala recursos **pessoais** (nunca commitados):
 | Scripts Cursor (Node.js) | `~/.cursor/hooks/scripts/*.mjs` | startup-check, block-dangerous, session-log (cross-platform) |
 | hooks.json Cursor | `~/.cursor/hooks.json` | Registra hooks globais no Cursor |
 | Prompts | `~/.claude/prompts/` e `~/.cursor/prompts/` | Prompts referenciados pelos hooks |
-| Statusline | `~/.claude/statusline-command.sh` | Exibe modelo, contexto, rate limits, branch e modo de permissão |
+| Statusline | `~/.claude/statusline-command.sh` | Exibe modelo, contexto, rate limits, branch, tarefa ativa e modo de permissão |
 
 ### `setup-project.sh` / `setup-project.ps1`
 
@@ -324,7 +333,7 @@ Executa uma vez por projeto. Instala recursos **commitáveis** (valem para o tim
 | Template de plano | `.claude/plans/active-plan.md` | Template de handoff de sessão |
 | Scripts Cursor (Node.js) | `.cursor/hooks/scripts/*.mjs` | format-on-edit, require-tests (cross-platform) |
 | hooks.json Cursor | `.cursor/hooks.json` | Registra hooks de projeto no Cursor (afterFileEdit + beforeShellExecution) |
-| .gitignore | `.gitignore` | Adiciona `.claude/settings.local.json`, `.claude/logs/`, `.claude/plans/archive/`, `.claude/dailies/` |
+| .gitignore | `.gitignore` | Adiciona `.claude/settings.local.json`, `.claude/logs/`, `.claude/plans/archive/`, `.claude/plans/.active-sessions.json`, `.claude/dailies/` |
 
 ---
 
@@ -337,9 +346,11 @@ O repositório inclui uma statusline para Claude Code que exibe informações ú
 | Linha | Conteúdo |
 |---|---|
 | 1 | Modelo ativo, tamanho do contexto, tokens usados/restantes e percentual |
-| 2 | Rate limit atual (5h) e semanal (7d) com medidores visuais + branch git |
+| 2 | Rate limit atual (5h) e semanal (7d) com medidores visuais + branch git + tarefa ativa (`▶ nome`) |
 | 3 | Horário de reset dos rate limits com tempo restante |
 | 4 | Modo de permissão ativo (auto, bypass, etc.) |
+
+A tarefa ativa é rastreada por sessão em `.claude/plans/.active-sessions.json` — cada terminal exibe apenas sua propria tarefa, permitindo multiplas sessões simultaneas.
 
 ### Instalação
 
@@ -411,4 +422,4 @@ Se não configurar nada, o Claude Code usa o padrão do plano automaticamente.
 
 ---
 
-*Ultima atualizacao: 2026-04-21*
+*Ultima atualizacao: 2026-04-22*

@@ -66,13 +66,23 @@ O que alguém — humano ou IA — precisa saber para continuar este trabalho a 
 Atualize **Status** para o valor apropriado (in-progress, blocked, paused).
 Atualize o timestamp **last-updated**.
 
-## Passo 5 — Arquivar se concluído
+## Passo 5 — Remover da sessão ativa
+
+Remova esta tarefa do registro de sessões ativas (tarefa pausada):
+
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] && jq --arg pid "$PPID" 'del(.[$pid])' \
+  "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+```
+
+## Passo 6 — Arquivar se concluído
 
 Se a tarefa está "done" (todos os acceptance criteria atendidos):
 - Mova o arquivo para `.cursor/plans/archive/<nome-da-tarefa>.md`
 - Crie o diretório archive/ se não existir
 - Informe o usuário que a tarefa foi arquivada
 
-## Passo 6 — Confirmar
+## Passo 7 — Confirmar
 
 - Confirme o arquivo salvo e informe que pode ser retomado com a rule "session-resume"

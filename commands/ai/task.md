@@ -73,7 +73,22 @@ Create .claude/plans/$TASK_NAME.md with the following structure:
 *last-updated: YYYY-MM-DD HH:MM*
 ```
 
-## Step 3 — Present and wait
+## Step 3 — Register active session
+
+Register this task as active for the current terminal session by running:
+
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] || echo '{}' > "$FILE"
+jq --arg pid "$PPID" --arg task "$TASK_NAME" \
+  '.[$pid] = {"task": $task, "started": (now | todate)}' \
+  "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+```
+
+This allows the statusline to display the current task and supports
+multiple concurrent sessions in different terminals.
+
+## Step 4 — Present and wait
 
 Present the plan to the user with:
 1. Implementation plan (steps, order, rationale)
@@ -85,7 +100,7 @@ Confirm that the plan was saved at .claude/plans/$TASK_NAME.md.
 
 Wait for my approval before writing any code.
 
-## Step 4 — Keep the plan alive (CRITICAL)
+## Step 5 — Keep the plan alive (CRITICAL)
 
 Once implementation begins, update .claude/plans/$TASK_NAME.md whenever:
 - A decision changes the original scope or approach
@@ -101,3 +116,7 @@ Update the **last-updated** timestamp on every write.
 
 This ensures /ai:handoff can read the plan file and produce a handoff
 with minimal effort — the plan IS the source of truth for this task.
+
+When all acceptance criteria are met, use /ai:task-finish to formally
+close the task, write a completion summary, and archive the plan.
+To discard a task that will not be executed, use /ai:task-delete.

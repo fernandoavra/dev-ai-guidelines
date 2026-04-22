@@ -21,6 +21,13 @@ CHANGES=$(git -C "$CWD" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
 
 echo "[$TIMESTAMP] session=$SESSION_ID branch=$BRANCH uncommitted_changes=$CHANGES" >> "$LOG_FILE"
 
+# Clean up active-sessions registry for this session
+SESSIONS_FILE="$CWD/.claude/plans/.active-sessions.json"
+if [ -f "$SESSIONS_FILE" ]; then
+  jq --arg pid "$PPID" 'del(.[$pid])' "$SESSIONS_FILE" > "$SESSIONS_FILE.tmp" && \
+    mv "$SESSIONS_FILE.tmp" "$SESSIONS_FILE" 2>/dev/null || true
+fi
+
 # Notificação desktop (macOS)
 if command -v osascript &>/dev/null; then
   osascript -e "display notification \"Branch: $BRANCH | $CHANGES mudanças não commitadas\" with title \"Claude Code — sessão encerrada\"" 2>/dev/null || true

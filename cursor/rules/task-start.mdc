@@ -64,7 +64,19 @@ Crie `.cursor/plans/<nome-da-tarefa>.md` com:
 *last-updated: YYYY-MM-DD HH:MM*
 ```
 
-### 3. Apresente e aguarde
+### 3. Registrar sessão ativa
+
+Registre esta tarefa como ativa para o terminal atual. Rode:
+
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] || echo '{}' > "$FILE"
+jq --arg pid "$PPID" --arg task "<nome-da-tarefa>" \
+  '.[$pid] = {"task": $task, "started": (now | todate)}' \
+  "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+```
+
+### 4. Apresente e aguarde
 
 Apresente:
 1. **Plano de implementação** — passos, ordem, justificativa
@@ -78,7 +90,7 @@ Confirme que o plano foi salvo em `.cursor/plans/<nome-da-tarefa>.md`.
 
 Se o plano revelar que mais de 3 arquivos em componentes diferentes são afetados, sinalize que este pode ser um caso para o workflow de feature cross-componente.
 
-### 4. Mantenha o plano vivo (CRÍTICO)
+### 5. Mantenha o plano vivo (CRÍTICO)
 
 Após aprovação e início da implementação, atualize `.cursor/plans/<nome-da-tarefa>.md` sempre que:
 - Uma decisão alterar o escopo ou abordagem original

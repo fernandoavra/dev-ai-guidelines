@@ -1,0 +1,89 @@
+---
+description: Invocar ao concluir uma tarefa — verifica critérios, registra resumo final e arquiva o plano
+alwaysApply: false
+---
+
+# Workflow: Conclusão de Tarefa
+
+## Quando usar
+
+Quando uma tarefa foi completada e você quer marcá-la formalmente como concluída, registrar o que foi feito e arquivar o plano. Diferente do handoff (que é para pausar/suspender), este workflow é terminal — a tarefa não será retomada.
+
+## Passo 1 — Obter nome da tarefa
+
+Pergunte ao usuário qual o nome da tarefa. Sanitize para uso como filename: lowercase, espaços viram hífens, remove caracteres especiais.
+Exemplo: "Migrar auth para OAuth2" → `migrar-auth-para-oauth2`
+
+Se o usuário não informar, liste os arquivos existentes em `.cursor/plans/` e `.claude/plans/` (excluindo `archive/`) para contexto.
+
+## Passo 2 — Localizar o plano
+
+Procure por `.cursor/plans/<nome-da-tarefa>.md` (criado pelo workflow task-start ou cross-component-feature).
+
+**Se o plano NÃO existir:**
+- Informe o usuário que nenhum plano foi encontrado.
+- Liste os planos disponíveis para referência.
+- Pergunte se quer prosseguir mesmo assim (cria registro mínimo de conclusão) ou se digitou o nome errado. NÃO prossiga sem confirmação.
+
+**Se o plano existir:**
+- Leia completamente — contém goal, plano, decisões e acceptance criteria.
+
+## Passo 3 — Verificar acceptance criteria
+
+Verifique a seção **Acceptance criteria** no plano.
+
+**Se TODOS os critérios estão marcados ([x]):**
+- Confirme ao usuário que todos os critérios foram atendidos. Prossiga.
+
+**Se algum critério NÃO está marcado ([ ]):**
+- Liste os critérios não atendidos explicitamente.
+- Pergunte: "Estes critérios estão em aberto. Deseja: (a) marcá-los como feitos agora, (b) ignorá-los e finalizar mesmo assim, ou (c) abortar e continuar trabalhando?"
+- NÃO prossiga sem confirmação explícita.
+
+## Passo 4 — Verificar trabalho não commitado
+
+Rode `git status` para verificar mudanças não commitadas.
+
+Se houver staged ou unstaged changes:
+- Informe o usuário e sugira commitar antes de finalizar.
+- Aguarde o usuário commitar ou dizer para prosseguir.
+
+Sugira também: "Se você ainda não rodou uma revisão de código, considere fazer isso antes de finalizar." Isto é sugestão, não bloqueio.
+
+## Passo 5 — Registrar resumo de conclusão
+
+Adicione esta seção no plano, APÓS seções de handoff existentes (não as remova — são parte do histórico):
+
+### Completion — (data atual)
+
+#### What was delivered
+- (entregáveis concretos: arquivos criados/alterados, features implementadas, bugs corrigidos)
+
+#### Key decisions made
+- (decisões significativas do Decision log, resumidas em 1 linha cada)
+
+#### What was NOT done (if applicable)
+- (itens de escopo adiados ou removidos, com motivo)
+
+#### Lessons learned (if any)
+- (insights não óbvios que ajudariam em tarefas similares futuras)
+
+## Passo 6 — Atualizar status e arquivar
+
+1. Atualize **Status** para `done`.
+2. Atualize o timestamp **last-updated**.
+3. Crie `.cursor/plans/archive/` se não existir.
+4. Mova o plano para `.cursor/plans/archive/<nome-da-tarefa>.md`.
+5. Remova da sessão ativa:
+
+   ```bash
+   FILE=".claude/plans/.active-sessions.json"
+   [ -f "$FILE" ] && jq --arg pid "$PPID" 'del(.[$pid])' \
+     "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+   ```
+
+## Passo 7 — Confirmar
+
+- Confirme que a tarefa foi marcada como concluída e arquivada.
+- Mostre o caminho do arquivo: `.cursor/plans/archive/<nome-da-tarefa>.md`
+- Lembre: "Rode o workflow daily-close no final do dia para capturar isto no resumo diário."

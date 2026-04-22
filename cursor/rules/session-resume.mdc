@@ -41,7 +41,19 @@ Apresente um resumo:
 - Verifique se os arquivos mencionados no handoff ainda existem e estão inalterados
 - Sinalize discrepâncias entre o estado salvo e a realidade atual
 
-## Passo 4 — Propor plano de retomada
+## Passo 4 — Registrar sessão ativa
+
+Registre esta tarefa como ativa para o terminal atual. Rode:
+
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] || echo '{}' > "$FILE"
+jq --arg pid "$PPID" --arg task "<nome-da-tarefa>" \
+  '.[$pid] = {"task": $task, "started": (now | todate)}' \
+  "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+```
+
+## Passo 5 — Propor plano de retomada
 
 Apresente:
 - "Com base no handoff, a próxima ação é: ..."

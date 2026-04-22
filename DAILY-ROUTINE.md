@@ -49,8 +49,12 @@ Adapte conforme o tipo de tarefa do dia.
 
 ## 🌙 Encerramento da sessão
 
+### Ao concluir uma tarefa
+- [ ] Rode `/ai:task-finish <nome>` para marcar como concluída e arquivar
+- [ ] Considere rodar `/ai:review` antes, se ainda não o fez
+
 ### Sempre antes de `/clear` ou fechar o terminal
-- [ ] Rode o prompt `05-session-handoff.md`
+- [ ] Rode `/ai:handoff <nome>` para tarefas em andamento (não concluídas)
 - [ ] Confirme que `.claude/plans/active-plan.md` foi atualizado
 - [ ] Faça commit do trabalho concluído com mensagem descritiva
 - [ ] Se algo ficou pela metade: documente o estado exato no active-plan.md
@@ -73,7 +77,7 @@ Adapte conforme o tipo de tarefa do dia.
 ### Sexta-feira (consolidação)
 - [ ] Rode `08-tech-debt-audit.md` se faz mais de 2 semanas sem rodar
 - [ ] Atualize o Decision Log do PROJECT.md com decisões da semana
-- [ ] Arquive planos concluídos de `.claude/plans/`
+- [ ] Finalize tarefas concluídas com `/ai:task-finish` e descarte as abandonadas com `/ai:task-delete`
 
 ---
 

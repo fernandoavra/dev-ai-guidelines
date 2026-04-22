@@ -1,0 +1,78 @@
+---
+description: Invocar para descartar uma tarefa que não será executada — remove ou arquiva o plano com motivo registrado
+alwaysApply: false
+---
+
+# Workflow: Descartar Tarefa
+
+## Quando usar
+
+Quando uma tarefa planejada não será mais executada — mudança de prioridade, decisão de não fazer, ou tarefa duplicada. Diferente do handoff (pausar) ou task-finish (concluir com sucesso).
+
+## Passo 1 — Obter nome da tarefa
+
+Pergunte ao usuário qual o nome da tarefa. Sanitize para uso como filename: lowercase, espaços viram hífens, remove caracteres especiais.
+Exemplo: "Migrar auth para OAuth2" → `migrar-auth-para-oauth2`
+
+Se o usuário não informar, liste os arquivos existentes em `.cursor/plans/` e `.claude/plans/` (excluindo `archive/`) para contexto.
+
+## Passo 2 — Localizar o plano
+
+Procure por `.cursor/plans/<nome-da-tarefa>.md` (criado pelo workflow task-start ou cross-component-feature).
+
+**Se o plano NÃO existir:**
+- Informe que nenhum plano foi encontrado.
+- Liste os disponíveis para referência.
+- NÃO prossiga — peça o nome correto.
+
+**Se o plano existir:**
+- Leia e mostre um resumo: goal, status atual, e quantos acceptance criteria foram completados vs total.
+
+## Passo 3 — Confirmar descarte
+
+Pergunte ao usuário:
+- "Por que esta tarefa está sendo descartada?" (o motivo vai para o registro)
+- "Deseja (a) arquivar com status 'discarded' (mantém histórico), ou (b) deletar o arquivo permanentemente?"
+
+NÃO prossiga sem confirmação explícita.
+
+## Passo 4 — Registrar e descartar
+
+**Se o usuário escolheu (a) arquivar:**
+
+1. Adicione esta seção ao plano:
+
+### Discarded — (data atual)
+
+**Reason:** (motivo do usuário)
+**Status at discard:** (o que foi feito até agora, se algo)
+
+2. Atualize **Status** para `discarded`.
+3. Atualize o timestamp **last-updated**.
+4. Crie `.cursor/plans/archive/` se não existir.
+5. Mova para `.cursor/plans/archive/<nome-da-tarefa>.md`.
+
+**Se o usuário escolheu (b) deletar:**
+1. Delete `.cursor/plans/<nome-da-tarefa>.md` permanentemente.
+
+## Passo 5 — Remover da sessão ativa
+
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] && jq --arg pid "$PPID" 'del(.[$pid])' \
+  "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+```
+
+## Passo 6 — Verificar branches e trabalho relacionado
+
+Rode `git status` e verifique se existe branch com nome da tarefa (feat/, fix/, etc.).
+
+Se encontrar:
+- Informe o usuário sobre a branch e mudanças não commitadas.
+- NÃO delete branches ou descarte mudanças automaticamente.
+
+## Passo 7 — Confirmar
+
+- Informe o que foi feito (arquivado com motivo ou deletado).
+- Se arquivado, mostre o caminho do arquivo.
+- Se há branches ou trabalho relacionado, lembre o usuário.

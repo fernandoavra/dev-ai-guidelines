@@ -96,7 +96,24 @@ if command -v git >/dev/null 2>&1; then
                git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
 fi
 
-# ── LINE 2: current rate limit meter | weekly meter | git branch ──────────────
+# ── Active task (from session registry) ───────────────────────────────────────
+active_task=""
+sessions_file="$cwd/.claude/plans/.active-sessions.json"
+if [ -f "$sessions_file" ]; then
+  active_task=$(jq -r --arg pid "$PPID" '.[$pid].task // empty' "$sessions_file" 2>/dev/null || true)
+fi
+
+# ── Branch + task suffix ──────────────────────────────────────────────────────
+branch_task=""
+if [ -n "$git_branch" ] && [ -n "$active_task" ]; then
+  branch_task=$(printf "  ${YELLOW}%s${RESET} | ${GREEN}▶ %s${RESET}" "$git_branch" "$active_task")
+elif [ -n "$git_branch" ]; then
+  branch_task=$(printf "  ${YELLOW}%s${RESET}" "$git_branch")
+elif [ -n "$active_task" ]; then
+  branch_task=$(printf "  ${GREEN}▶ %s${RESET}" "$active_task")
+fi
+
+# ── LINE 2: current rate limit meter | weekly meter | git branch | task ──────
 line2=""
 if [ -n "$five_hour_pct" ]; then
   fh_pct_int=$(printf "%.0f" "$five_hour_pct")
@@ -104,30 +121,17 @@ if [ -n "$five_hour_pct" ]; then
   if [ -n "$seven_day_pct" ]; then
     sd_pct_int=$(printf "%.0f" "$seven_day_pct")
     sd_meter=$(dot_meter "$sd_pct_int")
-    if [ -n "$git_branch" ]; then
-      line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET} | ${CYAN}weekly: ${GREEN}%s %d%%${RESET} |   ${YELLOW}%s${RESET}" \
-        "$fh_meter" "$fh_pct_int" \
-        "$sd_meter" "$sd_pct_int" \
-        "$git_branch")
-    else
-      line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET} | ${CYAN}weekly: ${GREEN}%s %d%%${RESET}" \
-        "$fh_meter" "$fh_pct_int" \
-        "$sd_meter" "$sd_pct_int")
-    fi
+    line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET} | ${CYAN}weekly: ${GREEN}%s %d%%${RESET}%b" \
+      "$fh_meter" "$fh_pct_int" \
+      "$sd_meter" "$sd_pct_int" \
+      "${branch_task:+ |$branch_task}")
   else
-    if [ -n "$git_branch" ]; then
-      line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET} |   ${YELLOW}%s${RESET}" \
-        "$fh_meter" "$fh_pct_int" \
-        "$git_branch")
-    else
-      line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET}" "$fh_meter" "$fh_pct_int")
-    fi
+    line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET}%b" \
+      "$fh_meter" "$fh_pct_int" \
+      "${branch_task:+ |$branch_task}")
   fi
-else
-  # No rate limits — just show git branch if available
-  if [ -n "$git_branch" ]; then
-    line2=$(printf "${YELLOW}%s${RESET}" "$git_branch")
-  fi
+elif [ -n "$branch_task" ]; then
+  line2=$(printf "%b" "$branch_task")
 fi
 
 # ── Time helpers ──────────────────────────────────────────────────────────────

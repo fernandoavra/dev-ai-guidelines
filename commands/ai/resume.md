@@ -42,7 +42,17 @@ Steps:
    - Check if files mentioned in the handoff still exist and are unchanged
    - Flag any discrepancies between saved state and current reality
 
-4. Present the resumption plan:
+4. Register active session — register this task for the current terminal:
+
+   ```bash
+   FILE=".claude/plans/.active-sessions.json"
+   [ -f "$FILE" ] || echo '{}' > "$FILE"
+   jq --arg pid "$PPID" --arg task "$TASK_NAME" \
+     '.[$pid] = {"task": $task, "started": (now | todate)}' \
+     "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+   ```
+
+5. Present the resumption plan:
    - "Based on the handoff, the next action is: ..."
    - Any risks or blockers that were flagged
    - Ask for confirmation before proceeding

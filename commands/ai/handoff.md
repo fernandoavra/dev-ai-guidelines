@@ -63,14 +63,28 @@ Append or update these sections in the plan file:
 Update **Status** to the appropriate value (in-progress, blocked, paused).
 Update **last-updated** timestamp.
 
-## Step 4 — Archive if done
+## Step 4 — Deregister active session
+
+Remove this task from the active sessions registry (task is being paused):
+
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] && jq --arg pid "$PPID" 'del(.[$pid])' \
+  "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+```
+
+## Step 5 — Redirect if done
 
 If the task status is "done" (all acceptance criteria met):
-- Move the plan file to .claude/plans/archive/$TASK_NAME.md
-- Create the archive/ directory if it does not exist.
-- Inform the user the task was archived.
+- Do NOT archive here. Instead, inform the user:
+  "This task appears to be complete. Use /ai:task-finish $ARGUMENTS to
+  formally close it with a completion summary and archive it."
+- Still save the handoff sections above so no context is lost.
+- If the user insists on finishing via handoff, proceed with archival:
+  move the plan file to .claude/plans/archive/$TASK_NAME.md (create
+  the archive/ directory if it does not exist).
 
-## Step 5 — Confirm
+## Step 6 — Confirm
 
 Output the git status and confirm the file was saved at
 .claude/plans/$TASK_NAME.md (or .claude/plans/archive/$TASK_NAME.md if archived)
