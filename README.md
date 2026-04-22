@@ -59,6 +59,7 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 | `/ai:setup` | Projeto novo — cria CLAUDE.md, agents, skills |
 | `/ai:update` | Projeto existente — gap analysis antes de mudar |
 | `/ai:docs` | Gera ou atualiza `PROJECT.md` |
+| `/ai:ask <pergunta>` | Responde perguntas sobre o projeto com base na documentação — sem escanear o codebase |
 | `/ai:task <descrição>` | Início de qualquer tarefa — plano antes do código |
 | `/ai:handoff <nome-da-tarefa>` | Salva estado de uma tarefa antes de `/clear` ou encerrar |
 | `/ai:resume [nome-da-tarefa]` | Retoma tarefa salva — lista disponíveis se nome omitido |
@@ -151,6 +152,17 @@ O Cursor não tem slash commands com argumentos. Em vez disso, usa **rules** (`.
 | `/ai:debt` | `tech-debt-audit.mdc` | Manual |
 | `/ai:bug` | `bug-diagnosis.mdc` | Manual |
 | `/ai:feature` | `cross-component-feature.mdc` | Manual |
+| `/ai:ask` | _(sem equivalente Cursor)_ | — |
+
+#### Cursor Rules de agentes
+
+| Agente | Cursor Rule | Ativação |
+|---|---|---|
+| `code-reviewer` | `code-reviewer.mdc` | Manual |
+| `architect` | `architect.mdc` | Manual |
+| `qa-engineer` | `qa-engineer.mdc` | Manual |
+| `security-reviewer` | `security-reviewer.mdc` | Manual |
+| `tech-debt-auditor` | `tech-debt-auditor.mdc` | Manual |
 
 ---
 
@@ -167,7 +179,7 @@ dev-ai-guidelines/
 │   └── README.md
 │
 ├── commands/ai/                # Comandos /ai:* para Claude Code
-│   ├── setup.md   update.md   docs.md   add.md
+│   ├── setup.md   update.md   docs.md   add.md   ask.md
 │   ├── task.md    handoff.md  resume.md
 │   ├── daily-close.md  daily-start.md
 │   ├── review.md  debt.md    bug.md    feature.md
@@ -202,7 +214,12 @@ dev-ai-guidelines/
 │   ├── bug-diagnosis.mdc       # Diagnóstico de bug
 │   ├── tech-debt-audit.mdc     # Auditoria de dívida técnica
 │   ├── cross-component-feature.mdc # Feature cross-componente
-│   └── project-conventions.mdc # Convenções do projeto (alwaysApply)
+│   ├── project-conventions.mdc # Convenções do projeto (alwaysApply)
+│   ├── architect.mdc           # Agente arquiteto
+│   ├── code-reviewer.mdc       # Agente revisor de código
+│   ├── qa-engineer.mdc         # Agente QA
+│   ├── security-reviewer.mdc   # Agente segurança
+│   └── tech-debt-auditor.mdc   # Agente dívida técnica
 │
 ├── templates/
 │   ├── CLAUDE.md               # Template do contexto do projeto
@@ -282,7 +299,7 @@ Executa uma vez por máquina. Instala recursos **pessoais** (nunca commitados):
 | Recurso | Destino | Detalhes |
 |---|---|---|
 | CLAUDE.md global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente, gerenciamento de contexto, fluxo de trabalho padrão e regras de segurança |
-| Comandos `/ai:*` (13) | `~/.claude/commands/ai/*.md` | setup, update, docs, task, handoff, resume, daily-close, daily-start, review, debt, bug, feature, add |
+| Comandos `/ai:*` (14) | `~/.claude/commands/ai/*.md` | setup, update, docs, ask, task, handoff, resume, daily-close, daily-start, review, debt, bug, feature, add |
 | Hook: startup-check | `~/.claude/hooks/startup-check.sh` | Dispara em `SessionStart`(startup) — detecta projeto sem CLAUDE.md |
 | Hook: intercept-clear | `~/.claude/hooks/intercept-clear.sh` | Dispara em `UserPromptSubmit` — intercepta `/clear` e força handoff |
 | Hook: post-compact | `~/.claude/hooks/post-compact.sh` | Dispara em `SessionStart`(compact) — reinjecta plano ativo |
@@ -391,3 +408,7 @@ Se não configurar nada, o Claude Code usa o padrão do plano automaticamente.
 - [Claude Code Hooks](https://code.claude.com/docs/en/hooks)
 - [Cursor Hooks](https://cursor.com/docs/hooks)
 - [Skills Explained](https://claude.com/blog/skills-explained)
+
+---
+
+*Ultima atualizacao: 2026-04-21*
