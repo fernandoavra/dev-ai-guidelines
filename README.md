@@ -36,11 +36,11 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 | O que | Onde | Descrição |
 |---|---|---|
 | `CLAUDE.md` global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente para todos os projetos |
-| Comandos `/ai:*` | `~/.claude/commands/ai/` | 16 comandos prontos em qualquer projeto |
+| Comandos `/ai:*` | `~/.claude/commands/ai/` | 17 comandos prontos em qualquer projeto |
 | Hooks Claude Code | `~/.claude/settings.json` | startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, session-log |
 | Hooks Cursor | `~/.cursor/hooks.json` | startup-check, block-dangerous, session-log |
 | Scripts | `~/.claude/hooks/` e `~/.cursor/hooks/scripts/` | Scripts shell e Node.js |
-| Prompts | `~/.claude/prompts/` | Referenciados pelos hooks automaticamente |
+| ~~Prompts~~ | ~~`~/.claude/prompts/`~~ | Hooks não dependem mais de prompts — direcionam para `/ai:*` diretamente |
 
 ### `setup-project` — commitado, vale para o time
 
@@ -72,6 +72,7 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 | `/ai:bug <sintoma>` | Diagnóstico de bug — root cause antes de qualquer fix |
 | `/ai:feature <descrição>` | Feature cross-componente — contrato antes dos agentes |
 | `/ai:add <caminho>` | Novo componente adicionado — integração cirúrgica na estrutura existente |
+| `/ai:status` | Visão rápida da sessão — tarefa ativa, planos abertos, git, daily |
 
 ### Fluxo handoff/resume (múltiplas tarefas em paralelo)
 
@@ -107,10 +108,10 @@ Hooks são scripts que disparam automaticamente em eventos do Claude Code ou Cur
 
 | Hook | Evento | Descrição |
 |---|---|---|
-| **startup-check** | `SessionStart` (startup) | Detecta se o projeto tem `CLAUDE.md` e `.claude/agents/`. Se ausentes, injeta prompt orientando o setup. Evita que sessões comecem sem contexto. |
-| **intercept-clear** | `UserPromptSubmit` | Intercepta `/clear` antes de executar. Verifica se existe trabalho não salvo e injeta prompt de handoff para evitar perda de contexto entre sessões. |
-| **post-compact** | `SessionStart` (compact) | Após `/compact`, reinjecta o plano ativo (`.claude/plans/`) e orienta o Claude a se recontextualizar. Evita que compactação cause perda de direção. |
-| **post-clear-orient** | `SessionStart` (clear) | Após `/clear`, reinjecta os próximos passos do handoff anterior para que o Claude saiba de onde continuar sem precisar perguntar. |
+| **startup-check** | `SessionStart` (startup) | Detecta se o projeto tem `CLAUDE.md` e `.claude/agents/`. Se ausentes, direciona para `/ai:setup`. |
+| **intercept-clear** | `UserPromptSubmit` | Intercepta `/clear` — se há tarefa ativa, sugere `/ai:handoff` antes de limpar. Ignora silenciosamente se não há tarefa. |
+| **post-compact** | `SessionStart` (compact) | Após `/compact`, lê o plano da tarefa ativa via `.active-sessions.json` e reinjecta para reorientação. |
+| **post-clear-orient** | `SessionStart` (clear) | Após `/clear`, reinjecta estado e próximos passos da tarefa ativa. Sugere `/ai:resume` para retomada completa. |
 | **block-dangerous** | `PreToolUse` (Bash) | Bloqueia comandos destrutivos (`rm -rf /`, `drop database`, `git push --force`, etc.) antes da execução. Atua como rede de segurança em qualquer projeto. |
 | **session-log** | `Stop` | Registra fim de sessão com timestamp em `.claude/logs/sessions.log`, limpa registro de tarefa ativa e envia notificação desktop (macOS/Linux). |
 
@@ -157,6 +158,7 @@ O Cursor não tem slash commands com argumentos. Em vez disso, usa **rules** (`.
 | `/ai:bug` | `bug-diagnosis.mdc` | Manual |
 | `/ai:feature` | `cross-component-feature.mdc` | Manual |
 | `/ai:ask` | _(sem equivalente Cursor)_ | — |
+| `/ai:status` | _(sem equivalente Cursor)_ | — |
 
 #### Cursor Rules de agentes
 
@@ -187,7 +189,7 @@ dev-ai-guidelines/
 │   ├── task.md    task-finish.md  task-delete.md
 │   ├── handoff.md  resume.md
 │   ├── daily-close.md  daily-start.md
-│   ├── review.md  debt.md    bug.md    feature.md
+│   ├── review.md  debt.md    bug.md    feature.md  status.md
 │
 ├── hooks/                      # Hooks Claude Code — bash (macOS/Linux)
 │   ├── startup-check.sh        # Detecta projeto sem CLAUDE.md
@@ -235,21 +237,14 @@ dev-ai-guidelines/
 │   └── active-plan.md          # Template de handoff de sessão
 │
 ├── agents/                     # Subagentes prontos para uso
-│   ├── code-reviewer.md
 │   ├── architect.md
+│   ├── code-reviewer.md
 │   ├── qa-engineer.md
-│   └── security-reviewer.md    # inclui tech-debt-auditor
+│   ├── security-reviewer.md
+│   └── tech-debt-auditor.md
 │
-├── prompts/                    # Prompts detalhados (referência e uso manual)
-│   ├── 01-setup-hybrid-structure.md
-│   ├── 02-gap-analysis.md
-│   ├── 03-project-documentation.md
-│   ├── 04-task-start.md
-│   ├── 05-session-handoff.md
-│   ├── 06-cross-component-feature.md
-│   ├── 07-code-review.md
-│   ├── 08-tech-debt-audit.md
-│   └── 09-bug-diagnosis.md
+├── prompts/                    # Legado — substituídos pelos comandos /ai:*
+│   └── (9 prompts originais — mantidos como referência histórica)
 │
 ├── DAILY-ROUTINE.md            # Rotina diária com checklist completo
 └── README.md
@@ -308,17 +303,17 @@ Executa uma vez por máquina. Instala recursos **pessoais** (nunca commitados):
 | Recurso | Destino | Detalhes |
 |---|---|---|
 | CLAUDE.md global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente, gerenciamento de contexto, fluxo de trabalho padrão e regras de segurança |
-| Comandos `/ai:*` (16) | `~/.claude/commands/ai/*.md` | setup, update, docs, ask, task, task-finish, task-delete, handoff, resume, daily-close, daily-start, review, debt, bug, feature, add |
-| Hook: startup-check | `~/.claude/hooks/startup-check.sh` | Dispara em `SessionStart`(startup) — detecta projeto sem CLAUDE.md |
-| Hook: intercept-clear | `~/.claude/hooks/intercept-clear.sh` | Dispara em `UserPromptSubmit` — intercepta `/clear` e força handoff |
-| Hook: post-compact | `~/.claude/hooks/post-compact.sh` | Dispara em `SessionStart`(compact) — reinjecta plano ativo |
-| Hook: post-clear-orient | `~/.claude/hooks/post-clear-orient.sh` | Dispara em `SessionStart`(clear) — reinjecta próximos passos |
+| Comandos `/ai:*` (17) | `~/.claude/commands/ai/*.md` | setup, update, docs, ask, task, task-finish, task-delete, handoff, resume, daily-close, daily-start, review, debt, bug, feature, add, status |
+| Hook: startup-check | `~/.claude/hooks/startup-check.sh` | Dispara em `SessionStart`(startup) — direciona para `/ai:setup` se projeto sem CLAUDE.md |
+| Hook: intercept-clear | `~/.claude/hooks/intercept-clear.sh` | Dispara em `UserPromptSubmit` — sugere `/ai:handoff` se há tarefa ativa |
+| Hook: post-compact | `~/.claude/hooks/post-compact.sh` | Dispara em `SessionStart`(compact) — reinjecta plano da tarefa ativa via `.active-sessions.json` |
+| Hook: post-clear-orient | `~/.claude/hooks/post-clear-orient.sh` | Dispara em `SessionStart`(clear) — reinjecta estado da tarefa ativa e sugere `/ai:resume` |
 | Hook: block-dangerous | `~/.claude/hooks/block-dangerous.sh` | Dispara em `PreToolUse`(Bash) — bloqueia comandos destrutivos |
 | Hook: session-log | `~/.claude/hooks/session-log.sh` | Dispara em `Stop` — log + notificação desktop |
 | settings.json global | `~/.claude/settings.json` | Registra todos os hooks globais acima no Claude Code |
 | Scripts Cursor (Node.js) | `~/.cursor/hooks/scripts/*.mjs` | startup-check, block-dangerous, session-log (cross-platform) |
 | hooks.json Cursor | `~/.cursor/hooks.json` | Registra hooks globais no Cursor |
-| Prompts | `~/.claude/prompts/` e `~/.cursor/prompts/` | Prompts referenciados pelos hooks |
+| ~~Prompts~~ | — | Hooks não dependem mais de prompts externos — direcionam para `/ai:*` |
 | Statusline | `~/.claude/statusline-command.sh` | Exibe modelo, contexto, rate limits, branch, tarefa ativa e modo de permissão |
 
 ### `setup-project.sh` / `setup-project.ps1`

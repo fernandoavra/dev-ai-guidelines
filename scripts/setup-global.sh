@@ -44,9 +44,7 @@ info "Configurando hooks globais do Claude Code..."
 
 CLAUDE_DIR="$HOME/.claude"
 CLAUDE_HOOKS_DIR="$CLAUDE_DIR/hooks"
-CLAUDE_PROMPTS_DIR="$CLAUDE_DIR/prompts"
-
-mkdir -p "$CLAUDE_HOOKS_DIR" "$CLAUDE_PROMPTS_DIR"
+mkdir -p "$CLAUDE_HOOKS_DIR"
 
 # Copia os scripts de hook
 cp hooks/startup-check.sh      "$CLAUDE_HOOKS_DIR/"
@@ -60,9 +58,9 @@ cp hooks/session-log.sh        "$CLAUDE_HOOKS_DIR/"
 chmod +x "$CLAUDE_HOOKS_DIR"/*.sh
 success "Scripts de hook do Claude Code copiados para $CLAUDE_HOOKS_DIR"
 
-# Copia os prompts referenciados pelos hooks
-cp prompts/*.md "$CLAUDE_PROMPTS_DIR/"
-success "Prompts copiados para $CLAUDE_PROMPTS_DIR"
+# Hooks não dependem mais de prompts externos — /ai:setup e /ai:handoff
+# são invocados diretamente. Prompts legados não são mais copiados.
+success "Hooks configurados (sem dependência de prompts externos)"
 
 # Gera o settings.json GLOBAL do Claude Code
 # Contém apenas os hooks que fazem sentido globalmente:
@@ -171,9 +169,7 @@ info "Configurando hooks globais do Cursor..."
 
 CURSOR_GLOBAL_DIR="$HOME/.cursor"
 CURSOR_HOOKS_DIR="$CURSOR_GLOBAL_DIR/hooks/scripts"
-CURSOR_PROMPTS_DIR="$CURSOR_GLOBAL_DIR/prompts"
-
-mkdir -p "$CURSOR_HOOKS_DIR" "$CURSOR_PROMPTS_DIR"
+mkdir -p "$CURSOR_HOOKS_DIR"
 
 # Copia os scripts Node.js (cross-platform)
 cp hooks-cursor/scripts/startup-check.mjs  "$CURSOR_HOOKS_DIR/"
@@ -181,9 +177,7 @@ cp hooks-cursor/scripts/block-dangerous.mjs "$CURSOR_HOOKS_DIR/"
 cp hooks-cursor/scripts/session-log.mjs    "$CURSOR_HOOKS_DIR/"
 success "Scripts de hook do Cursor copiados para $CURSOR_HOOKS_DIR"
 
-# Copia os prompts
-cp prompts/*.md "$CURSOR_PROMPTS_DIR/"
-success "Prompts copiados para $CURSOR_PROMPTS_DIR"
+success "Hooks do Cursor configurados"
 
 # Gera o hooks.json GLOBAL do Cursor
 CURSOR_HOOKS_JSON="$CURSOR_GLOBAL_DIR/hooks.json"
@@ -268,9 +262,6 @@ echo ""
 echo "  # Subagentes usam Sonnet independente do modelo principal"
 echo "  export CLAUDE_CODE_SUBAGENT_MODEL=\"claude-sonnet-4-6\""
 echo ""
-echo "  # Diretórios de prompts (já definidos pelos hooks, mas útil ter explícito)"
-echo "  export CLAUDE_PROMPTS_DIR=\"\$HOME/.claude/prompts\""
-echo "  export CURSOR_PROMPTS_DIR=\"\$HOME/.cursor/prompts\""
 echo ""
 
 # =============================================================================
@@ -298,7 +289,9 @@ echo "  /ai:review      — code review com agentes"
 echo "  /ai:debt        — auditoria de dívida técnica"
 echo "  /ai:bug         — diagnóstico de bug (root cause first)"
 echo "  /ai:feature     — feature cross-componente com contrato"
+echo "  /ai:ask         — responde perguntas sobre o projeto via documentação"
 echo "  /ai:add         — integra novo componente/repositório à estrutura existente"
+echo "  /ai:status      — visão rápida do estado da sessão atual"
 echo ""
 echo "  Claude Code hooks  → $CLAUDE_SETTINGS"
 echo "  ├── CLAUDE.md global (orquestração multi-agente)"
