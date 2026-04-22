@@ -152,6 +152,11 @@ cat > "$CLAUDE_SETTINGS" << 'EOF'
       }
     ]
 
+  },
+
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
   }
 }
 EOF
