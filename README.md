@@ -36,7 +36,7 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 | O que | Onde | Descrição |
 |---|---|---|
 | `CLAUDE.md` global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente para todos os projetos |
-| Comandos `/ai:*` | `~/.claude/commands/ai/` | 17 comandos prontos em qualquer projeto |
+| Comandos `/ai:*` | `~/.claude/commands/ai/` | 18 comandos prontos em qualquer projeto |
 | Hooks Claude Code | `~/.claude/settings.json` | startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, session-log |
 | Hooks Cursor | `~/.cursor/hooks.json` | startup-check, block-dangerous, session-log |
 | Scripts | `~/.claude/hooks/` e `~/.cursor/hooks/scripts/` | Scripts shell e Node.js |
@@ -69,6 +69,7 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 | `/ai:daily-start` | Início do dia — briefing com contexto do dia anterior |
 | `/ai:review` | Antes de abrir qualquer PR |
 | `/ai:debt` | Auditoria periódica de dívida técnica |
+| `/ai:db-audit [paths]` | Auditoria de banco de dados — schema, migrations, indexes, modelagem e plano de acao |
 | `/ai:bug <sintoma>` | Diagnóstico de bug — root cause antes de qualquer fix |
 | `/ai:feature <descrição>` | Feature cross-componente — contrato antes dos agentes |
 | `/ai:add <caminho>` | Novo componente adicionado — integração cirúrgica na estrutura existente |
@@ -169,6 +170,7 @@ O Cursor não tem slash commands com argumentos. Em vez disso, usa **rules** (`.
 | `qa-engineer` | `qa-engineer.mdc` | Manual |
 | `security-reviewer` | `security-reviewer.mdc` | Manual |
 | `tech-debt-auditor` | `tech-debt-auditor.mdc` | Manual |
+| `db-auditor` | _(sem equivalente Cursor)_ | — |
 
 ---
 
@@ -189,7 +191,7 @@ dev-ai-guidelines/
 │   ├── task.md    task-finish.md  task-delete.md
 │   ├── handoff.md  resume.md
 │   ├── daily-close.md  daily-start.md
-│   ├── review.md  debt.md    bug.md    feature.md  status.md
+│   ├── review.md  debt.md  db-audit.md  bug.md  feature.md  status.md
 │
 ├── hooks/                      # Hooks Claude Code — bash (macOS/Linux)
 │   ├── startup-check.sh        # Detecta projeto sem CLAUDE.md
@@ -241,7 +243,8 @@ dev-ai-guidelines/
 │   ├── code-reviewer.md
 │   ├── qa-engineer.md
 │   ├── security-reviewer.md
-│   └── tech-debt-auditor.md
+│   ├── tech-debt-auditor.md
+│   └── db-auditor.md
 │
 ├── prompts/                    # Legado — substituídos pelos comandos /ai:*
 │   └── (9 prompts originais — mantidos como referência histórica)
@@ -287,6 +290,7 @@ Desistiu → /ai:task-delete <nome> → descarta com motivo
 Pausa    → /ai:handoff <nome-da-tarefa> → /clear
 Fim dia  → /ai:daily-close → resumo do dia salvo
 Quinzenal → /ai:debt
+DB audit → /ai:db-audit [path1 path2 ...]
 Bug      → /ai:bug <sintoma>
 ```
 
@@ -303,7 +307,7 @@ Executa uma vez por máquina. Instala recursos **pessoais** (nunca commitados):
 | Recurso | Destino | Detalhes |
 |---|---|---|
 | CLAUDE.md global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente, gerenciamento de contexto, fluxo de trabalho padrão e regras de segurança |
-| Comandos `/ai:*` (17) | `~/.claude/commands/ai/*.md` | setup, update, docs, ask, task, task-finish, task-delete, handoff, resume, daily-close, daily-start, review, debt, bug, feature, add, status |
+| Comandos `/ai:*` (18) | `~/.claude/commands/ai/*.md` | setup, update, docs, ask, task, task-finish, task-delete, handoff, resume, daily-close, daily-start, review, debt, db-audit, bug, feature, add, status |
 | Hook: startup-check | `~/.claude/hooks/startup-check.sh` | Dispara em `SessionStart`(startup) — direciona para `/ai:setup` se projeto sem CLAUDE.md |
 | Hook: intercept-clear | `~/.claude/hooks/intercept-clear.sh` | Dispara em `UserPromptSubmit` — sugere `/ai:handoff` se há tarefa ativa |
 | Hook: post-compact | `~/.claude/hooks/post-compact.sh` | Dispara em `SessionStart`(compact) — reinjecta plano da tarefa ativa via `.active-sessions.json` |
