@@ -52,6 +52,7 @@ cp hooks/intercept-clear.sh    "$CLAUDE_HOOKS_DIR/"
 cp hooks/post-compact.sh       "$CLAUDE_HOOKS_DIR/"
 cp hooks/post-clear-orient.sh  "$CLAUDE_HOOKS_DIR/"
 cp hooks/block-dangerous.sh    "$CLAUDE_HOOKS_DIR/"
+cp hooks/block-env-files.sh    "$CLAUDE_HOOKS_DIR/"
 cp hooks/session-log.sh        "$CLAUDE_HOOKS_DIR/"
 
 # Permissão de execução
@@ -69,6 +70,7 @@ success "Hooks configurados (sem dependência de prompts externos)"
 # - post-compact:       reorienta após /compact
 # - post-clear-orient:  reorienta após /clear
 # - block-dangerous:    segurança básica em qualquer projeto
+# - block-env-files:    bloqueia leitura/escrita em .env e environment.*
 # - session-log:        notificação de fim de sessão
 
 CLAUDE_SETTINGS="$CLAUDE_DIR/settings.json"
@@ -134,6 +136,15 @@ cat > "$CLAUDE_SETTINGS" << 'EOF'
         "hooks": [{
           "type": "command",
           "command": "~/.claude/hooks/block-dangerous.sh",
+          "timeout": 5
+        }]
+      },
+      {
+        "_comment": "Bloqueia leitura/escrita em .env e environment.* — vale em qualquer projeto",
+        "matcher": "Read|Write|Edit",
+        "hooks": [{
+          "type": "command",
+          "command": "~/.claude/hooks/block-env-files.sh",
           "timeout": 5
         }]
       }
@@ -301,6 +312,7 @@ echo "  ├── post-compact    (SessionStart: compact)"
 echo "  ├── post-clear-orient (SessionStart: clear)"
 echo "  ├── intercept-clear (UserPromptSubmit)"
 echo "  ├── block-dangerous (PreToolUse: Bash)"
+echo "  ├── block-env-files (PreToolUse: Read|Write|Edit)"
 echo "  └── session-log     (Stop)"
 echo ""
 echo "  Cursor hooks       → $CURSOR_HOOKS_JSON"

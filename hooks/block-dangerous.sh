@@ -46,4 +46,18 @@ EOF
   fi
 done
 
+# Bloqueia leitura de arquivos de ambiente via Bash (cat .env, less .env.local, etc.)
+if echo "$COMMAND" | grep -qiE '(cat|less|more|head|tail|bat|vi|vim|nano|code|open)\s+.*\.env(\s|$|\.)|cat.*environment\.(ts|js)'; then
+  cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "Leitura de arquivo de ambiente bloqueada por política de segurança. Arquivos .env contêm credenciais e não devem ser lidos pelo agente."
+  }
+}
+EOF
+  exit 0
+fi
+
 exit 0

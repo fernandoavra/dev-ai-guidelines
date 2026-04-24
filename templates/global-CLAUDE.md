@@ -85,10 +85,91 @@ Nunca pule da exploração direto para a implementação sem aprovação do plan
 
 ## Segurança
 
-- Nunca commitar secrets, tokens, senhas ou chaves de API
+### Princípio geral
+
 - Nunca executar comandos destrutivos sem confirmação explícita
 - Preferir ações reversíveis quando houver alternativa equivalente
 - Em caso de dúvida sobre escopo de uma ação, perguntar antes de agir
+
+### Arquivos de ambiente — PROIBIDO ler e escrever
+
+Nunca ler, criar, editar, sobrescrever ou exibir o conteúdo de arquivos de ambiente.
+Esta regra é absoluta e não admite exceções, mesmo que o usuário peça.
+
+Arquivos protegidos (qualquer diretório, qualquer extensão combinada):
+- `.env`, `.env.*` (`.env.local`, `.env.production`, `.env.staging`, etc.)
+- `environment.ts`, `environment.js`, `environment.*.ts`, `environment.*.js`
+- `.env.development.local`, `.env.test.local`, `.env.production.local`
+- Qualquer arquivo cujo nome contenha `env` e que armazene credenciais reais
+
+O que é permitido:
+- Ler e editar `.env.example` (apenas placeholders, nunca valores reais)
+- Referenciar nomes de variáveis de ambiente em documentação ou código (`process.env.DATABASE_URL`)
+- Criar `.env.example` com valores placeholder óbvios (`YOUR_API_KEY_HERE`, `changeme`)
+
+Se o usuário pedir para ler um `.env`, responder:
+> "Arquivos de ambiente estão protegidos por política de segurança. Posso ajudar com `.env.example` ou com a documentação das variáveis necessárias."
+
+### Código seguro (prevencao OWASP)
+
+- **SQL Injection** — nunca concatenar input de usuário em queries; usar prepared statements / parameterized queries sempre
+- **XSS** — nunca inserir dados não sanitizados em HTML; usar funções de escape do framework
+- **Command Injection** — nunca interpolar variáveis de usuário em shell commands; usar arrays de argumentos
+- **Path Traversal** — nunca aceitar paths de usuário sem validar; rejeitar `..` e paths absolutos em inputs
+- **SSRF** — nunca fazer requests HTTP com URLs fornecidas pelo usuário sem whitelist
+- **Desserialização insegura** — nunca usar `eval()`, `pickle.loads()`, `unserialize()` com dados externos
+- **Criptografia própria** — nunca implementar algoritmos cripto; usar bibliotecas estabelecidas (bcrypt, argon2, libsodium)
+
+### Secrets e credenciais
+
+- Nunca hardcodar secrets, tokens, senhas, chaves de API ou connection strings no código
+- Nunca logar/imprimir credenciais, tokens ou dados sensíveis (mesmo em modo debug)
+- Nunca commitar `.env`, `credentials.json`, `*.pem`, `*.key` ou similares
+- Sempre usar variáveis de ambiente ou secret managers para credenciais
+- Ao criar `.env.example`, usar valores placeholder óbvios (`YOUR_API_KEY_HERE`)
+
+### Dependências
+
+- Nunca adicionar dependências sem necessidade clara — preferir stdlib quando possível
+- Antes de sugerir um pacote, considerar: manutenção ativa, popularidade, histórico de vulnerabilidades
+- Nunca executar `curl | bash` ou `wget | sh` para instalar ferramentas
+- Preferir versões fixas/pinadas em lock files
+
+### Git e versionamento
+
+- Nunca force push para `main`/`master`/`develop`
+- Nunca usar `--no-verify` para pular hooks
+- Nunca commitar arquivos binários grandes, dumps de banco ou logs
+- Sempre revisar o diff antes de commitar — nunca `git add .` cegamente
+- Nunca commitar com mensagens vazias ou genéricas
+
+### Dados sensíveis e privacidade
+
+- Nunca logar PII (emails, CPFs, telefones, endereços) em texto plano
+- Nunca expor stack traces ou mensagens de erro internas em respostas de API
+- Nunca incluir dados reais de produção em seeds, fixtures ou testes
+- Sanitizar logs: mascarar tokens, IDs de sessão e dados pessoais
+
+### Infraestrutura e CI/CD
+
+- Nunca modificar Dockerfiles para rodar como root sem justificativa explícita
+- Nunca alterar pipelines de CI/CD, workflows do GitHub Actions ou deploy configs sem confirmação
+- Nunca expor portas de serviços internos (databases, caches) para rede pública
+- Nunca desabilitar HTTPS, TLS verification ou certificate checks
+
+### Autenticação e autorização
+
+- Nunca comparar tokens/senhas com `==` — usar comparação em tempo constante
+- Nunca armazenar senhas em texto plano — sempre hash + salt
+- Nunca implementar autenticação custom quando o framework oferece uma solução
+- Sempre validar permissões no backend — nunca confiar apenas no frontend
+
+### Proteção de sistema de arquivos
+
+- Nunca ler/escrever fora do diretório do projeto sem confirmação
+- Nunca modificar arquivos de sistema (`/etc/`, `~/.ssh/`, `~/.bashrc`) sem pedido explícito
+- Nunca deletar arquivos sem confirmação — preferir mover para backup
+- Nunca sobrescrever lock files (`package-lock.json`, `Gemfile.lock`) sem necessidade
 
 ---
 
@@ -110,4 +191,4 @@ Todos os projetos seguem esta convenção de idioma para arquivos de configuraç
 ---
 <!-- Gerenciado por dev-ai-guidelines — não editar manualmente -->
 <!-- Atualizar rodando: dev-ai-guidelines/scripts/setup-global.sh -->
-version: 1.1
+version: 1.2

@@ -37,7 +37,7 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 |---|---|---|
 | `CLAUDE.md` global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente para todos os projetos |
 | Comandos `/ai:*` | `~/.claude/commands/ai/` | 18 comandos prontos em qualquer projeto |
-| Hooks Claude Code | `~/.claude/settings.json` | startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, session-log |
+| Hooks Claude Code | `~/.claude/settings.json` | startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, block-env-files, session-log |
 | Hooks Cursor | `~/.cursor/hooks.json` | startup-check, block-dangerous, session-log |
 | Scripts | `~/.claude/hooks/` e `~/.cursor/hooks/scripts/` | Scripts shell e Node.js |
 | ~~Prompts~~ | ~~`~/.claude/prompts/`~~ | Hooks não dependem mais de prompts — direcionam para `/ai:*` diretamente |
@@ -113,7 +113,8 @@ Hooks são scripts que disparam automaticamente em eventos do Claude Code ou Cur
 | **intercept-clear** | `UserPromptSubmit` | Intercepta `/clear` — se há tarefa ativa, sugere `/ai:handoff` antes de limpar. Ignora silenciosamente se não há tarefa. |
 | **post-compact** | `SessionStart` (compact) | Após `/compact`, lê o plano da tarefa ativa via `.active-sessions.json` e reinjecta para reorientação. |
 | **post-clear-orient** | `SessionStart` (clear) | Após `/clear`, reinjecta estado e próximos passos da tarefa ativa. Sugere `/ai:resume` para retomada completa. |
-| **block-dangerous** | `PreToolUse` (Bash) | Bloqueia comandos destrutivos (`rm -rf /`, `drop database`, `git push --force`, etc.) antes da execução. Atua como rede de segurança em qualquer projeto. |
+| **block-dangerous** | `PreToolUse` (Bash) | Bloqueia comandos destrutivos (`rm -rf /`, `drop database`, `git push --force`, etc.) e leitura de `.env` via shell antes da execução. Atua como rede de segurança em qualquer projeto. |
+| **block-env-files** | `PreToolUse` (Read\|Write\|Edit) | Bloqueia leitura e escrita em arquivos de ambiente (`.env`, `.env.*`, `environment.ts/js`). Permite apenas `.env.example`. |
 | **session-log** | `Stop` | Registra fim de sessão com timestamp em `.claude/logs/sessions.log`, limpa registro de tarefa ativa e envia notificação desktop (macOS/Linux). |
 
 ### Hooks por projeto (instalados por `setup-project`)
@@ -198,7 +199,8 @@ dev-ai-guidelines/
 │   ├── intercept-clear.sh      # Força handoff antes de /clear
 │   ├── post-compact.sh         # Reorienta após /compact
 │   ├── post-clear-orient.sh    # Reorienta após /clear
-│   ├── block-dangerous.sh      # Bloqueia comandos destrutivos
+│   ├── block-dangerous.sh      # Bloqueia comandos destrutivos + leitura de .env via shell
+│   ├── block-env-files.sh      # Bloqueia Read/Write/Edit em .env e environment.*
 │   ├── format-on-edit.sh       # Auto-formata após edições
 │   ├── require-tests.sh        # Bloqueia PR se testes falhando
 │   ├── session-log.sh          # Log + notificação desktop
@@ -306,13 +308,14 @@ Executa uma vez por máquina. Instala recursos **pessoais** (nunca commitados):
 
 | Recurso | Destino | Detalhes |
 |---|---|---|
-| CLAUDE.md global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente, gerenciamento de contexto, fluxo de trabalho padrão e regras de segurança |
+| CLAUDE.md global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente, gerenciamento de contexto, fluxo de trabalho padrão e segurança abrangente (OWASP, secrets, .env, deps, git, privacidade, infra, auth, filesystem) |
 | Comandos `/ai:*` (18) | `~/.claude/commands/ai/*.md` | setup, update, docs, ask, task, task-finish, task-delete, handoff, resume, daily-close, daily-start, review, debt, db-audit, bug, feature, add, status |
 | Hook: startup-check | `~/.claude/hooks/startup-check.sh` | Dispara em `SessionStart`(startup) — direciona para `/ai:setup` se projeto sem CLAUDE.md |
 | Hook: intercept-clear | `~/.claude/hooks/intercept-clear.sh` | Dispara em `UserPromptSubmit` — sugere `/ai:handoff` se há tarefa ativa |
 | Hook: post-compact | `~/.claude/hooks/post-compact.sh` | Dispara em `SessionStart`(compact) — reinjecta plano da tarefa ativa via `.active-sessions.json` |
 | Hook: post-clear-orient | `~/.claude/hooks/post-clear-orient.sh` | Dispara em `SessionStart`(clear) — reinjecta estado da tarefa ativa e sugere `/ai:resume` |
-| Hook: block-dangerous | `~/.claude/hooks/block-dangerous.sh` | Dispara em `PreToolUse`(Bash) — bloqueia comandos destrutivos |
+| Hook: block-dangerous | `~/.claude/hooks/block-dangerous.sh` | Dispara em `PreToolUse`(Bash) — bloqueia comandos destrutivos e leitura de .env via shell |
+| Hook: block-env-files | `~/.claude/hooks/block-env-files.sh` | Dispara em `PreToolUse`(Read\|Write\|Edit) — bloqueia acesso a .env e environment.* |
 | Hook: session-log | `~/.claude/hooks/session-log.sh` | Dispara em `Stop` — log + notificação desktop |
 | settings.json global | `~/.claude/settings.json` | Registra todos os hooks globais acima no Claude Code |
 | Scripts Cursor (Node.js) | `~/.cursor/hooks/scripts/*.mjs` | startup-check, block-dangerous, session-log (cross-platform) |
@@ -421,4 +424,4 @@ Se não configurar nada, o Claude Code usa o padrão do plano automaticamente.
 
 ---
 
-*Ultima atualizacao: 2026-04-22*
+*Ultima atualizacao: 2026-04-23*
