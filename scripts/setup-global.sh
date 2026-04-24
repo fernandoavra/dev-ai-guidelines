@@ -85,6 +85,10 @@ cat > "$CLAUDE_SETTINGS" << 'EOF'
 {
   "_scope": "global — aplica em todos os projetos",
   "_managed_by": "dev-ai-guidelines/scripts/setup-global.sh",
+  "language": "Portuguese (Brazil)",
+  "preferredNotifChannel": "auto",
+  "remoteControlAtStartup": true,
+  "skipAutoPermissionPrompt": true,
 
   "hooks": {
 

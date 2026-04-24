@@ -71,6 +71,10 @@ $ClaudeHooksPath = $ClaudeHooks.Replace('\', '\\')
   "_scope": "global — aplica em todos os projetos",
   "_managed_by": "dev-ai-guidelines/scripts/setup-global.ps1",
   "_note": "Windows: hooks usam Node.js (.mjs) em vez de bash (.sh)",
+  "language": "Portuguese (Brazil)",
+  "preferredNotifChannel": "auto",
+  "remoteControlAtStartup": true,
+  "skipAutoPermissionPrompt": true,
 
   "hooks": {
 
