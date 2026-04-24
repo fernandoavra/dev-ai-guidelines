@@ -37,7 +37,7 @@ git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflo
 |---|---|---|
 | `CLAUDE.md` global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente para todos os projetos |
 | Comandos `/ai:*` | `~/.claude/commands/ai/` | 18 comandos prontos em qualquer projeto |
-| Hooks Claude Code | `~/.claude/settings.json` | startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, block-env-files, session-log |
+| Hooks + settings Claude Code | `~/.claude/settings.json` | Hooks: startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, block-env-files, session-log. Settings: language, preferredNotifChannel, remoteControlAtStartup, skipAutoPermissionPrompt |
 | Hooks Cursor | `~/.cursor/hooks.json` | startup-check, block-dangerous, session-log |
 | Scripts | `~/.claude/hooks/` e `~/.cursor/hooks/scripts/` | Scripts shell e Node.js |
 | ~~Prompts~~ | ~~`~/.claude/prompts/`~~ | Hooks não dependem mais de prompts — direcionam para `/ai:*` diretamente |
@@ -317,7 +317,7 @@ Executa uma vez por máquina. Instala recursos **pessoais** (nunca commitados):
 | Hook: block-dangerous | `~/.claude/hooks/block-dangerous.sh` | Dispara em `PreToolUse`(Bash) — bloqueia comandos destrutivos e leitura de .env via shell |
 | Hook: block-env-files | `~/.claude/hooks/block-env-files.sh` | Dispara em `PreToolUse`(Read\|Write\|Edit) — bloqueia acesso a .env e environment.* |
 | Hook: session-log | `~/.claude/hooks/session-log.sh` | Dispara em `Stop` — log + notificação desktop |
-| settings.json global | `~/.claude/settings.json` | Registra todos os hooks globais acima no Claude Code |
+| settings.json global | `~/.claude/settings.json` | Registra hooks globais + configuracoes: `language`, `preferredNotifChannel`, `remoteControlAtStartup`, `skipAutoPermissionPrompt` |
 | Scripts Cursor (Node.js) | `~/.cursor/hooks/scripts/*.mjs` | startup-check, block-dangerous, session-log (cross-platform) |
 | hooks.json Cursor | `~/.cursor/hooks.json` | Registra hooks globais no Cursor |
 | ~~Prompts~~ | — | Hooks não dependem mais de prompts externos — direcionam para `/ai:*` |
@@ -424,4 +424,4 @@ Se não configurar nada, o Claude Code usa o padrão do plano automaticamente.
 
 ---
 
-*Ultima atualizacao: 2026-04-23*
+*Ultima atualizacao: 2026-04-24*
