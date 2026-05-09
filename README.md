@@ -21,6 +21,12 @@ cd seu-projeto
 git add .claude/ .cursor/ && git commit -m "chore: add ai hooks for team workflow"
 ```
 
+**Atualizar apenas comandos** (sem reconfigurar hooks/settings):
+```bash
+cd dev-ai-guidelines
+./scripts/update-commands.sh
+```
+
 **Windows (PowerShell):**
 ```powershell
 .\scripts\setup-global.ps1   # uma vez por máquina
@@ -185,6 +191,7 @@ dev-ai-guidelines/
 ├── scripts/                    # Setup automatizado (global + projeto)
 │   ├── setup-global.sh / .ps1  # Instala hooks, comandos e CLAUDE.md global
 │   ├── setup-project.sh / .ps1 # Instala hooks do projeto (commitável)
+│   ├── update-commands.sh      # Atualiza apenas comandos /ai:* (sem hooks/settings)
 │   └── README.md
 │
 ├── commands/ai/                # Comandos /ai:* para Claude Code
@@ -424,4 +431,4 @@ Se não configurar nada, o Claude Code usa o padrão do plano automaticamente.
 
 ---
 
-*Ultima atualizacao: 2026-04-24*
+*Ultima atualizacao: 2026-05-09*

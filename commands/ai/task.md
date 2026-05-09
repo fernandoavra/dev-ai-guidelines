@@ -73,9 +73,8 @@ Create .claude/plans/$TASK_NAME.md with the following structure:
 *last-updated: YYYY-MM-DD HH:MM*
 ```
 
-## Step 3 — Register active session
-
-Register this task as active for the current terminal session by running:
+IMMEDIATELY after creating the plan file, register this task as active
+for the current terminal session by running:
 
 ```bash
 FILE=".claude/plans/.active-sessions.json"
@@ -85,10 +84,9 @@ jq --arg pid "$PPID" --arg task "$TASK_NAME" \
   "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
 ```
 
-This allows the statusline to display the current task and supports
-multiple concurrent sessions in different terminals.
+Do NOT skip this — the statusline depends on it to display the active task.
 
-## Step 4 — Present and wait
+## Step 3 — Present and wait
 
 Present the plan to the user with:
 1. Implementation plan (steps, order, rationale)
@@ -100,7 +98,7 @@ Confirm that the plan was saved at .claude/plans/$TASK_NAME.md.
 
 Wait for my approval before writing any code.
 
-## Step 5 — Keep the plan alive (CRITICAL)
+## Step 4 — Keep the plan alive (CRITICAL)
 
 Once implementation begins, update .claude/plans/$TASK_NAME.md whenever:
 - A decision changes the original scope or approach

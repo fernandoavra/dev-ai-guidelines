@@ -71,7 +71,20 @@ Example: "checkout com split payment" becomes "checkout-com-split-payment".
 *last-updated: YYYY-MM-DD HH:MM*
 ```
 
-2. Present the contract and plan for approval.
+2. IMMEDIATELY after creating the plan file, register this task as active
+   for the current terminal session by running:
+
+   ```bash
+   FILE=".claude/plans/.active-sessions.json"
+   [ -f "$FILE" ] || echo '{}' > "$FILE"
+   jq --arg pid "$PPID" --arg task "$FEATURE_NAME" \
+     '.[$pid] = {"task": $task, "started": (now | todate)}' \
+     "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+   ```
+
+   Do NOT skip this — the statusline depends on it to display the active task.
+
+3. Present the contract and plan for approval.
    **Wait for my approval before any agent proceeds.**
 
 ## Step 2 — Parallel implementation
