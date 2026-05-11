@@ -192,6 +192,7 @@ dev-ai-guidelines/
 │   ├── setup-global.sh / .ps1  # Instala hooks, comandos e CLAUDE.md global
 │   ├── setup-project.sh / .ps1 # Instala hooks do projeto (commitável)
 │   ├── update-commands.sh      # Atualiza apenas comandos /ai:* (sem hooks/settings)
+│   ├── update-statusline.sh    # Atualiza apenas statusline + bloco statusLine (merge cirurgico)
 │   └── README.md
 │
 ├── commands/ai/                # Comandos /ai:* para Claude Code
@@ -361,12 +362,28 @@ O repositório inclui uma statusline para Claude Code que exibe informações ú
 
 A tarefa ativa é rastreada por sessão em `.claude/plans/.active-sessions.json` — cada terminal exibe apenas sua propria tarefa, permitindo multiplas sessões simultaneas.
 
+#### Cache de rate limits
+
+O Claude Code só injeta os campos `rate_limits.*` no input do statusline **após a primeira resposta da API** (limitação documentada do CLI, não do script). Para que os medidores apareçam já na abertura da sessão, o script persiste o último valor visto em `~/.claude/.statusline-cache.json` e o restaura quando o input vier sem `rate_limits`, exibindo um selo `[cache Xm/h/d]` em amarelo para indicar que o dado é stale.
+
+Na primeira execução em uma máquina (sem cache ainda), a linha 2 exibe `current: — | weekly: —` como placeholder discreto até que a primeira mensagem real popule o cache.
+
+> Observação: os campos `rate_limits.five_hour` e `rate_limits.seven_day` só existem em contas **Claude Pro/Max**. Em licença Enterprise (Bedrock/Vertex/endpoint corporativo) esses campos não são populados pelo Claude Code — o placeholder permanece, e isso é esperado.
+
 ### Instalação
 
-A statusline é configurada automaticamente pelo `setup-global.sh`. Para usar manualmente:
+A statusline é configurada automaticamente pelo `setup-global.sh`. Para atualizar **somente** o statusline (sem reescrever hooks ou settings):
 
 ```bash
-# Copie o script para ~/.claude/ (ou use o caminho do repo)
+cd dev-ai-guidelines
+./scripts/update-statusline.sh
+```
+
+Esse script copia `.claude/statusline-command.sh` para `~/.claude/` e faz um merge cirúrgico do bloco `statusLine` no `~/.claude/settings.json` (preserva todas as outras chaves, com backup em `.bak`).
+
+Para configuração manual:
+
+```bash
 cp .claude/statusline-command.sh ~/.claude/statusline-command.sh
 chmod +x ~/.claude/statusline-command.sh
 ```
