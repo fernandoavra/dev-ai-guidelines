@@ -24,6 +24,62 @@ seven_day_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage //
 seven_day_resets=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
 cwd=$(echo "$input" | jq -r '.cwd // .workspace.current_dir // "."')
 
+# ── Rate limit cache ──────────────────────────────────────────────────────────
+# Claude Code só injeta rate_limits no statusline DEPOIS da primeira resposta da
+# API. Para evitar que a abertura da sessão fique sem essas linhas, persistimos
+# o último valor visto em ~/.claude/.statusline-cache.json e restauramos quando
+# o input atual vier sem rate_limits.
+RL_CACHE_FILE="$HOME/.claude/.statusline-cache.json"
+from_cache=0
+cache_age_label=""
+
+# Grava cache quando temos dados frescos
+if [ -n "$five_hour_pct" ] || [ -n "$seven_day_pct" ]; then
+  _now=$(date +%s)
+  _tmp=$(mktemp 2>/dev/null) || _tmp=""
+  if [ -n "$_tmp" ]; then
+    jq -n \
+      --argjson saved_at "$_now" \
+      --arg fh_pct "${five_hour_pct:-}" \
+      --arg fh_resets "${five_hour_resets:-}" \
+      --arg sd_pct "${seven_day_pct:-}" \
+      --arg sd_resets "${seven_day_resets:-}" \
+      '{
+        saved_at: $saved_at,
+        five_hour_pct: $fh_pct,
+        five_hour_resets: $fh_resets,
+        seven_day_pct: $sd_pct,
+        seven_day_resets: $sd_resets
+      }' > "$_tmp" 2>/dev/null && mv "$_tmp" "$RL_CACHE_FILE" 2>/dev/null
+    [ -f "$_tmp" ] && rm -f "$_tmp"
+  fi
+fi
+
+# Restaura do cache quando input atual não tem rate_limits
+if [ -z "$five_hour_pct" ] && [ -z "$seven_day_pct" ] && [ -f "$RL_CACHE_FILE" ]; then
+  _cached_at=$(jq -r '.saved_at // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
+  if [ -n "$_cached_at" ]; then
+    five_hour_pct=$(jq -r '.five_hour_pct // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
+    five_hour_resets=$(jq -r '.five_hour_resets // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
+    seven_day_pct=$(jq -r '.seven_day_pct // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
+    seven_day_resets=$(jq -r '.seven_day_resets // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
+    from_cache=1
+
+    _now=$(date +%s)
+    _age=$(( _now - _cached_at ))
+    [ "$_age" -lt 0 ] && _age=0
+    if [ "$_age" -lt 60 ]; then
+      cache_age_label="<1m"
+    elif [ "$_age" -lt 3600 ]; then
+      cache_age_label="$(( _age / 60 ))m"
+    elif [ "$_age" -lt 86400 ]; then
+      cache_age_label="$(( _age / 3600 ))h"
+    else
+      cache_age_label="$(( _age / 86400 ))d"
+    fi
+  fi
+fi
+
 # ── Format helpers ─────────────────────────────────────────────────────────────
 format_k() {
   local n=$1
@@ -114,6 +170,11 @@ elif [ -n "$active_task" ]; then
 fi
 
 # ── LINE 2: current rate limit meter | weekly meter | git branch | task ──────
+# Selo de cache: anexa "[cache Xm]" em amarelo quando rate_limits vieram do cache
+cache_badge=""
+[ "$from_cache" -eq 1 ] && [ -n "$cache_age_label" ] && \
+  cache_badge=$(printf " ${YELLOW}[cache %s]${RESET}" "$cache_age_label")
+
 line2=""
 if [ -n "$five_hour_pct" ]; then
   fh_pct_int=$(printf "%.0f" "$five_hour_pct")
@@ -121,17 +182,25 @@ if [ -n "$five_hour_pct" ]; then
   if [ -n "$seven_day_pct" ]; then
     sd_pct_int=$(printf "%.0f" "$seven_day_pct")
     sd_meter=$(dot_meter "$sd_pct_int")
-    line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET} | ${CYAN}weekly: ${GREEN}%s %d%%${RESET}%b" \
+    line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET} | ${CYAN}weekly: ${GREEN}%s %d%%${RESET}%s%b" \
       "$fh_meter" "$fh_pct_int" \
       "$sd_meter" "$sd_pct_int" \
+      "$cache_badge" \
       "${branch_task:+ |$branch_task}")
   else
-    line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET}%b" \
+    line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET}%s%b" \
       "$fh_meter" "$fh_pct_int" \
+      "$cache_badge" \
       "${branch_task:+ |$branch_task}")
   fi
-elif [ -n "$branch_task" ]; then
-  line2=$(printf "%b" "$branch_task")
+else
+  # Sem dados frescos nem cache: placeholder discreto explicando o estado
+  placeholder=$(printf "${CYAN}current: ${YELLOW}—${RESET} | ${CYAN}weekly: ${YELLOW}—${RESET} ${YELLOW}(envie qualquer mensagem para popular)${RESET}")
+  if [ -n "$branch_task" ]; then
+    line2=$(printf "%s%b" "$placeholder" " |$branch_task")
+  else
+    line2="$placeholder"
+  fi
 fi
 
 # ── Time helpers ──────────────────────────────────────────────────────────────
