@@ -195,7 +195,7 @@ if [ -n "$five_hour_pct" ]; then
   fi
 else
   # Sem dados frescos nem cache: placeholder discreto explicando o estado
-  placeholder=$(printf "${CYAN}current: ${YELLOW}—${RESET} | ${CYAN}weekly: ${YELLOW}—${RESET} ${YELLOW}(envie qualquer mensagem para popular)${RESET}")
+  placeholder=$(printf "${CYAN}current: ${YELLOW}—${RESET} | ${CYAN}weekly: ${YELLOW}—${RESET}")
   if [ -n "$branch_task" ]; then
     line2=$(printf "%s%b" "$placeholder" " |$branch_task")
   else
