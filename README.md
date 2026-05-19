@@ -42,7 +42,7 @@ cd dev-ai-guidelines
 | O que | Onde | Descrição |
 |---|---|---|
 | `CLAUDE.md` global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente para todos os projetos |
-| Comandos `/ai:*` | `~/.claude/commands/ai/` | 20 comandos prontos em qualquer projeto |
+| Comandos `/ai:*` | `~/.claude/commands/ai/` | 21 comandos prontos em qualquer projeto |
 | Hooks + settings Claude Code | `~/.claude/settings.json` | Hooks: startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, block-env-files, session-log. Settings: language, preferredNotifChannel, remoteControlAtStartup, skipAutoPermissionPrompt |
 | Hooks Cursor | `~/.cursor/hooks.json` | startup-check, block-dangerous, session-log |
 | Scripts | `~/.claude/hooks/` e `~/.cursor/hooks/scripts/` | Scripts shell e Node.js |
@@ -66,7 +66,8 @@ cd dev-ai-guidelines
 | `/ai:update` | Projeto existente — gap analysis antes de mudar |
 | `/ai:docs` | Gera ou atualiza `PROJECT.md` |
 | `/ai:ask <pergunta>` | Responde perguntas sobre o projeto com base na documentação — sem escanear o codebase |
-| `/ai:task <descrição>` | Início de qualquer tarefa — plano antes do código |
+| `/ai:spec <tema>` | Discovery estruturado — entrevista adaptive (triagem -> 6 ou 10 perguntas) que gera PRD em `.claude/plans/specs/` antes de virar plano |
+| `/ai:task <descrição>` | Início de qualquer tarefa — plano antes do código (le spec existente se houver) |
 | `/ai:task-finish <nome>` | Marca tarefa como concluída — resumo final e arquiva o plano |
 | `/ai:task-delete <nome>` | Descarta tarefa que não será executada — remove ou arquiva com motivo |
 | `/ai:handoff <nome-da-tarefa>` | Salva estado de uma tarefa antes de `/clear` ou encerrar |
@@ -79,9 +80,27 @@ cd dev-ai-guidelines
 | `/ai:debt` | Auditoria periódica de dívida técnica |
 | `/ai:db-audit [paths]` | Auditoria de banco de dados — schema, migrations, indexes, modelagem e plano de acao |
 | `/ai:bug <sintoma>` | Diagnóstico de bug — root cause antes de qualquer fix |
-| `/ai:feature <descrição>` | Feature cross-componente — contrato antes dos agentes |
+| `/ai:feature <descrição>` | Feature cross-componente — contrato antes dos agentes (le spec existente se houver) |
 | `/ai:add <caminho>` | Novo componente adicionado — integração cirúrgica na estrutura existente |
 | `/ai:status` | Visão rápida da sessão — tarefa ativa, planos abertos, git, daily |
+
+### Discovery: `/ai:spec` antes do plano
+
+Quando o pedido ainda esta vago ("queremos refazer o checkout", "precisamos
+de relatorios"), use `/ai:spec` antes de `/ai:task` ou `/ai:feature`. O
+comando faz triagem na primeira pergunta:
+
+- **Ajuste pequeno** → ja redireciona para `/ai:task`.
+- **Feature media** → 6 perguntas (problema, usuario, AC, out-of-scope,
+  constraints, riscos).
+- **Iniciativa grande** → 10 perguntas (acima + personas, metricas,
+  milestones, stakeholders).
+
+Output: PRD em `.claude/plans/specs/<slug>.md` que os comandos
+`/ai:task` e `/ai:feature` detectam automaticamente e referenciam como
+`Source spec:` no plan file, preservando rastreabilidade do PORQUE.
+
+Spec captura WHY/WHAT. Plan captura HOW. Os dois nao se duplicam.
 
 ### Pre-PR triagem: `/ai:hostile-review` vs `/ai:review`
 
@@ -219,8 +238,9 @@ dev-ai-guidelines/
 │   ├── update-statusline.sh    # Atualiza apenas statusline + bloco statusLine (merge cirurgico)
 │   └── README.md
 │
-├── commands/ai/                # Comandos /ai:* para Claude Code (20)
+├── commands/ai/                # Comandos /ai:* para Claude Code (21)
 │   ├── setup.md   update.md   docs.md   add.md   ask.md
+│   ├── spec.md                 # Discovery/PRD antes de task ou feature
 │   ├── task.md    task-finish.md  task-delete.md
 │   ├── handoff.md  resume.md
 │   ├── daily-close.md  daily-start.md

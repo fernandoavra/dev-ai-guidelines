@@ -11,6 +11,20 @@ This feature spans multiple components. Use agent teams.
 
 Feature: $ARGUMENTS
 
+## Step 0 — Check for an existing spec
+
+Sanitize $ARGUMENTS into a slug (same rule as Step 1) and check for
+`.claude/plans/specs/<slug>.md`. If it exists, read it first — its
+Problem, Goals, Non-goals, Constraints, Risks (and for large specs,
+Success metrics, Milestones, Stakeholders) become the starting
+context. The plan file MUST include `**Source spec:** .claude/plans/specs/<slug>.md`
+in the header (right after Status). Do not duplicate the WHY content
+verbatim — reference the spec for it; the plan focuses on the HOW.
+
+If no spec exists, suggest `/ai:spec` first when the feature feels
+under-defined. Proceed only if the user confirms the feature is
+already well-understood and a spec would add no value.
+
 ## Step 1 — Contract design
 
 Sanitize $ARGUMENTS for use as filename: lowercase, replace spaces with

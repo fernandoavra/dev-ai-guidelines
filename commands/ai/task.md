@@ -9,6 +9,16 @@ Do NOT proceed without a task description.
 
 Task: $ARGUMENTS
 
+## Step 0 — Check for an existing spec
+
+Sanitize $ARGUMENTS into a slug (same rule as Step 2) and check for
+`.claude/plans/specs/<slug>.md`. If it exists, read it first — its
+Problem, Goals, Non-goals, and Constraints become the starting context
+for the plan. The plan must include `**Source spec:** .claude/plans/specs/<slug>.md`
+in the header (right after Status) for traceability.
+
+If no spec exists, proceed normally — specs are optional for tasks.
+
 ## Step 1 — Explore
 
 Before writing any code, use subagents to:
