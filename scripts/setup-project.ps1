@@ -8,6 +8,14 @@
 #   /caminho/para/dev-ai-guidelines/scripts/setup-project.ps1
 #
 # Compatível: Windows 10/11 com Node.js instalado
+#
+# Drift conhecido com setup-project.sh (Unix/Mac):
+#   - Esta versão instala hooks .mjs (Node.js) também para o lado Claude,
+#     porque shell scripts .sh não rodam nativamente no Windows. A versão
+#     .sh instala .sh no lado Claude e .mjs no lado Cursor.
+#   - Comportamento dos hooks é equivalente; apenas o runtime difere.
+#   - Suporte Windows é best-effort. Mudancas profundas devem ser testadas
+#     antes de garantir paridade.
 # =============================================================================
 
 $ErrorActionPreference = "Stop"

@@ -42,7 +42,7 @@ cd dev-ai-guidelines
 | O que | Onde | Descrição |
 |---|---|---|
 | `CLAUDE.md` global | `~/.claude/CLAUDE.md` | Regras de orquestração multi-agente para todos os projetos |
-| Comandos `/ai:*` | `~/.claude/commands/ai/` | 18 comandos prontos em qualquer projeto |
+| Comandos `/ai:*` | `~/.claude/commands/ai/` | 20 comandos prontos em qualquer projeto |
 | Hooks + settings Claude Code | `~/.claude/settings.json` | Hooks: startup-check, intercept-clear, post-compact, post-clear-orient, block-dangerous, block-env-files, session-log. Settings: language, preferredNotifChannel, remoteControlAtStartup, skipAutoPermissionPrompt |
 | Hooks Cursor | `~/.cursor/hooks.json` | startup-check, block-dangerous, session-log |
 | Scripts | `~/.claude/hooks/` e `~/.cursor/hooks/scripts/` | Scripts shell e Node.js |
@@ -73,13 +73,30 @@ cd dev-ai-guidelines
 | `/ai:resume [nome-da-tarefa]` | Retoma tarefa salva — lista disponíveis se nome omitido |
 | `/ai:daily-close` | Final do dia — gera resumo do progresso e pendências |
 | `/ai:daily-start` | Início do dia — briefing com contexto do dia anterior |
-| `/ai:review` | Antes de abrir qualquer PR |
+| `/ai:review` | Code review com agentes especializados antes de abrir PR |
+| `/ai:hostile-review [task]` | Gate adversarial — valida se o trabalho atinge o objetivo (distinto de qualidade de codigo) |
+| `/ai:pr-review [pr-numbers]` | Revisao em massa de PRs abertos — 1 steward Maestri por PR em paralelo |
 | `/ai:debt` | Auditoria periódica de dívida técnica |
 | `/ai:db-audit [paths]` | Auditoria de banco de dados — schema, migrations, indexes, modelagem e plano de acao |
 | `/ai:bug <sintoma>` | Diagnóstico de bug — root cause antes de qualquer fix |
 | `/ai:feature <descrição>` | Feature cross-componente — contrato antes dos agentes |
 | `/ai:add <caminho>` | Novo componente adicionado — integração cirúrgica na estrutura existente |
 | `/ai:status` | Visão rápida da sessão — tarefa ativa, planos abertos, git, daily |
+
+### Pre-PR triagem: `/ai:hostile-review` vs `/ai:review`
+
+Os dois comandos cobrem diferentes camadas e devem ser usados em sequencia
+antes de abrir um PR significativo:
+
+- **`/ai:hostile-review`** — *"isso resolve o problema?"* Gate adversarial.
+  Pergunta se o trabalho atinge o objetivo declarado no plano, valida
+  criterios de aceitacao, caca gaps e scope creep. Veredito GO/NO-GO.
+- **`/ai:review`** — *"o codigo esta bom?"* Code review tecnico. Dispatch
+  paralelo de code-reviewer + security-reviewer + qa-engineer. Reporta
+  achados em escala P0/P1/P2/P3 unificada (ver `agents/severity-scale.md`).
+
+Em PRs em massa, `/ai:pr-review` orquestra ambos automaticamente via
+Maestri stewards.
 
 ### Fluxo handoff/resume (múltiplas tarefas em paralelo)
 
@@ -147,6 +164,13 @@ Hooks são scripts que disparam automaticamente em eventos do Claude Code ou Cur
 
 ## Cursor Rules — equivalentes dos comandos `/ai:*`
 
+> **Status:** o stack Cursor e mantido como cidadao **best-effort**. A fonte
+> da verdade primaria sao os comandos `/ai:*` em `commands/ai/` — features
+> novas chegam la primeiro e podem demorar a aparecer no Cursor. Atualmente
+> faltam mirrors para: `hostile-review`, `pr-review`, `db-audit`, `add`,
+> `ask`, `status`. Os hooks Cursor tambem estao atras dos hooks Claude
+> (faltam: block-env-files, intercept-clear, post-clear-orient, post-compact).
+
 O Cursor não tem slash commands com argumentos. Em vez disso, usa **rules** (`.mdc`) ativadas por contexto ou manualmente. As Cursor rules equivalentes ficam em `cursor/rules/`:
 
 | Claude Code | Cursor Rule | Ativação |
@@ -195,12 +219,13 @@ dev-ai-guidelines/
 │   ├── update-statusline.sh    # Atualiza apenas statusline + bloco statusLine (merge cirurgico)
 │   └── README.md
 │
-├── commands/ai/                # Comandos /ai:* para Claude Code
+├── commands/ai/                # Comandos /ai:* para Claude Code (20)
 │   ├── setup.md   update.md   docs.md   add.md   ask.md
 │   ├── task.md    task-finish.md  task-delete.md
 │   ├── handoff.md  resume.md
 │   ├── daily-close.md  daily-start.md
-│   ├── review.md  debt.md  db-audit.md  bug.md  feature.md  status.md
+│   ├── review.md  hostile-review.md  pr-review.md
+│   ├── debt.md  db-audit.md  bug.md  feature.md  status.md
 │
 ├── hooks/                      # Hooks Claude Code — bash (macOS/Linux)
 │   ├── startup-check.sh        # Detecta projeto sem CLAUDE.md
@@ -251,13 +276,16 @@ dev-ai-guidelines/
 ├── agents/                     # Subagentes prontos para uso
 │   ├── architect.md
 │   ├── code-reviewer.md
+│   ├── db-auditor.md
+│   ├── hostile-reviewer.md
 │   ├── qa-engineer.md
 │   ├── security-reviewer.md
 │   ├── tech-debt-auditor.md
-│   └── db-auditor.md
+│   └── severity-scale.md       # Escala P0/P1/P2/P3 unificada (referenciada pelos agents)
 │
-├── prompts/                    # Legado — substituídos pelos comandos /ai:*
-│   └── (9 prompts originais — mantidos como referência histórica)
+├── archive/                    # Material legado mantido para referencia
+│   ├── README.md               # Mapa: prompt original → comando atual
+│   └── prompts/                # 9 prompts originais — substituidos por /ai:*
 │
 ├── DAILY-ROUTINE.md            # Rotina diária com checklist completo
 └── README.md
@@ -448,4 +476,4 @@ Se não configurar nada, o Claude Code usa o padrão do plano automaticamente.
 
 ---
 
-*Ultima atualizacao: 2026-05-09*
+*Ultima atualizacao: 2026-05-19*
