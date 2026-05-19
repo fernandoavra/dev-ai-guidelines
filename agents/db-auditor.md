@@ -4,6 +4,13 @@ description: >
   Invoke for database audits — schema analysis, migration review, index
   optimization, relationship mapping, and data modeling assessment.
   Documents findings only — does not execute migrations or alter schemas.
+
+  Owns DB-specific security too: PII/encryption at rest, schema-level
+  audit trails, SQL injection vectors in raw queries.
+
+  Do NOT invoke for: application-layer dead code or duplication (use
+  tech-debt-auditor), application-layer auth/IDOR (use security-reviewer),
+  code quality of ORM models beyond schema concerns (use code-reviewer).
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
@@ -74,15 +81,17 @@ optimization, and modeling improvements.
 For each finding:
 
 ```
-[CATEGORY] [TABLE or SCOPE]
+[CATEGORY] [P0 | P1 | P2 | P3] [TABLE or SCOPE]
 Issue: what was found (be specific — include table names, column names, file paths)
 Risk: impact if left unaddressed
 Effort: quick-win | planned | long-term
-Priority: critical | high | medium | low
 Recommendation: one-line suggested action
 ```
 
 Categories: `schema | migration | index | integrity | performance | security | naming | modeling`
+
+Severity follows the shared scale in `agents/severity-scale.md`
+(P0 blocking, P1 major, P2 minor, P3 polish). Do not invent levels.
 
 ## Effort guide
 
