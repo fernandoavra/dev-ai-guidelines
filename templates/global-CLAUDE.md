@@ -56,6 +56,27 @@ Quando subagentes retornam resultados:
 - Salve detalhes em `.claude/plans/` se precisar referenciar depois
 - Informe qual agente encontrou o quê para rastreabilidade
 
+### Template canônico de invocação de subagente
+
+Quando um comando ou prompt invoca um subagente, o dispatch deve ser
+**explícito e estruturado** — nunca prosa vaga tipo "use subagentes para
+explorar". Use sempre o Task tool com um briefing completo:
+
+```
+Dispatch para @<agent-name>:
+- Objetivo: <uma frase>
+- Inputs: <arquivos/decisões que o agente precisa ler antes>
+- Saída esperada: <formato e escopo>
+- Limite: <tamanho do relatório, ex: "até 800 palavras">
+- Severidade: usar a escala definida em agents/severity-scale.md
+```
+
+Agentes não veem o histórico desta conversa. O briefing precisa ser
+auto-suficiente. Anti-padrões a evitar:
+- `@code-reviewer, dá uma olhada` — sem objetivo nem escopo
+- `Use subagentes em paralelo para X` — sem nomear quais
+- `Verifica isso pra mim` — sem critério de aceitação
+
 ---
 
 ## Gerenciamento de Contexto
@@ -191,4 +212,4 @@ Todos os projetos seguem esta convenção de idioma para arquivos de configuraç
 ---
 <!-- Gerenciado por dev-ai-guidelines — não editar manualmente -->
 <!-- Atualizar rodando: dev-ai-guidelines/scripts/setup-global.sh -->
-version: 1.2
+version: 1.3
