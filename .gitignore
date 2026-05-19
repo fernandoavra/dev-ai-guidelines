@@ -2,6 +2,7 @@
 .claude/settings.local.json
 .claude/logs/
 .claude/plans/archive/
+.claude/plans/.active-sessions.json
 
 # Configuração local do Cursor
 .cursor/logs/
