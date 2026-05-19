@@ -1,7 +1,7 @@
 ---
 description: Revisão hostil em massa de PRs abertos — spawna 1 steward Maestri por PR, atualiza base, corrige achados e comenta de forma didática
 argument-hint: [pr-numbers (opcional, ex: "8,10,22") | all (default)]
-allowed-tools: Bash, Read, Edit, Write, Grep, Glob
+allowed-tools: Bash, Read, Edit, Write, Grep, Glob, Agent, TaskCreate, TaskUpdate
 ---
 
 You are the orchestrator. Your job is NOT to revise PRs yourself — your job
@@ -70,10 +70,12 @@ git worktree add .claude/worktrees/pr-<N>-review origin/<branch>`
 >    worktree. Use whatever sub-agents or skills you need. Stay within
 >    the PR's scope — do not refactor unrelated code. Every change must
 >    have a clear justification.
-> 5. After fixing, run `/review` to validate. Repeat (fix → /review)
->    until you have real confidence in the implementation. Cap at 3
->    cycles: if P0/P1 findings remain after 3 iterations, document them
->    as blockers in the PR comment and stop trying to fix them yourself.
+> 5. After fixing, run `/ai:review` to validate code quality with the
+>    project's specialized agents (code-reviewer, security-reviewer,
+>    qa-engineer). Repeat (fix → `/ai:review`) until you have real
+>    confidence. Cap at 3 cycles: if P0/P1 findings remain after 3
+>    iterations, document them as blockers in the PR comment and stop
+>    trying to fix them yourself.
 > 6. Commit using the project's commit style (Conventional Commits in
 >    the project's language, NO AI co-authorship). Push to the same
 >    branch as the PR.

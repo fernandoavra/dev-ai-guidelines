@@ -5,17 +5,19 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 If $ARGUMENTS is empty:
-1. List all .md files in .claude/plans/
-2. For EACH file found, read the first 10 lines to extract the task name
-   and date from the ## Task and ## Date headers
-3. Present a numbered table with columns: #, Task Name, Date, Filename
+1. List all .md files in `.claude/plans/` (exclude dotfiles and archive/).
+2. For EACH file, extract the task name from the first `# Task:` or
+   `# Feature:` heading on line 1 of the plan file — that is the source
+   of truth. Extract the date from the `**Started:**` field. Use the
+   filename only as a fallback identifier.
+3. Present a numbered table with columns: #, Task, Started, Filename
    Example:
-     | # | Tarefa                    | Data       | Arquivo                        |
-     |---|---------------------------|------------|--------------------------------|
-     | 1 | Migrar auth para OAuth2   | 2026-04-15 | migrar-auth-para-oauth2.md     |
-     | 2 | Refatorar módulo de pagamentos | 2026-04-16 | refatorar-modulo-pagamentos.md |
-4. If no files are found, inform the user there are no saved handoffs
-   and suggest using /ai:handoff <nome> to create one.
+     | # | Task                          | Started    | Filename                    |
+     |---|-------------------------------|------------|-----------------------------|
+     | 1 | Migrate auth to OAuth2        | 2026-04-15 | migrate-auth-to-oauth2.md   |
+     | 2 | Refactor payments module      | 2026-04-16 | refactor-payments-module.md |
+4. If no files are found, tell the user there are no saved handoffs
+   and suggest using `/ai:handoff <name>` to create one.
 5. Ask the user to pick a number or type the task name.
 6. Do NOT proceed until the user chooses.
 

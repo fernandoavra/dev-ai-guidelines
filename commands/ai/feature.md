@@ -17,59 +17,15 @@ Sanitize $ARGUMENTS for use as filename: lowercase, replace spaces with
 hyphens, remove special characters, truncate to 50 chars max.
 Example: "checkout com split payment" becomes "checkout-com-split-payment".
 
-1. @architect-agent: design the contract between components first
+1. Dispatch @architect first to design the contract between components:
    - API schema, event format, or shared type definitions
-   - Save to .claude/plans/$FEATURE_NAME.md with the following structure:
-
-```
-# Feature: $ARGUMENTS
-
-**Started:** (current date)
-**Status:** contract-design
-
-## Goal
-(one clear sentence describing what this feature achieves)
-
-## Contract
-
-### Components involved
-- [component] — role in this feature
-
-### Interface definitions
-(API schema, event format, or shared type definitions)
-
-### Constraints
-(what must be true across all implementations)
-
-### Implementation order
-(sequential or parallel — be explicit about dependencies)
-
-## Plan
-1. [step] — rationale
-2. [step] — rationale
-...
-
-## Files affected
-- `path/to/file` — reason for change
-
-## Acceptance criteria
-- [ ] criterion 1
-- [ ] criterion 2
-
-## Risks and edge cases
-- [risk or edge case]
-
-## Open questions
-- [question that needs an answer before or during implementation]
-
-## Decision log
-| Date | Decision | Rationale | Impact |
-|------|----------|-----------|--------|
-| (date) | Contract designed | — | — |
-
----
-*last-updated: YYYY-MM-DD HH:MM*
-```
+   - Save to `.claude/plans/$FEATURE_NAME.md` following the **Feature
+     variant** of the schema in `.claude/plans/.plan-template.md` (base
+     schema + the `## Contract` section). Read that template first if you
+     have not seen it in this session.
+   - Use `**Status:** contract-design` initially.
+   - Architect does not begin implementation — its only deliverable is
+     the contract written to the plan file.
 
 2. IMMEDIATELY after creating the plan file, register this task as active
    for the current terminal session by running:

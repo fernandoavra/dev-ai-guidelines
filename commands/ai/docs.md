@@ -19,7 +19,14 @@ EXPLORE the following in parallel:
 
 Do NOT write any file until the full exploration is complete.
 
-After exploration, create or update PROJECT.md at the project root.
+After exploration, present a summary of:
+- Sections planned for PROJECT.md and what each will contain
+- Gaps found during exploration (what is missing or unclear)
+- Conventions you inferred and want to confirm
+
+**Wait for my approval before creating or updating PROJECT.md.**
+
+After approval, create or update PROJECT.md at the project root.
 
 This file serves two audiences simultaneously:
 - Human developers: onboarding, orientation, day-to-day reference

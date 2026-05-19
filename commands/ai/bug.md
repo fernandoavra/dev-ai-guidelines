@@ -4,6 +4,9 @@ argument-hint: <descrição do sintoma>
 allowed-tools: Read, Write, Bash, Glob, Grep
 ---
 
+If $ARGUMENTS is empty, ask the user to describe the symptom.
+Do NOT proceed without a symptom description.
+
 Something is broken. Do not guess. Investigate first.
 
 Symptom: $ARGUMENTS

@@ -44,3 +44,6 @@ From latest daily (<date>):
 Keep it short — this is a glance, not a report.
 If there are no plans, no daily, or no uncommitted changes, omit those
 sections entirely rather than showing empty placeholders.
+
+If there is no active task, replace the `Session:` and `Status:` lines
+with a single hint: `No active task — start one with /ai:task <description>`.

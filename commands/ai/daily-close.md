@@ -13,8 +13,17 @@ Steps:
 2. Gather information from multiple sources (in parallel when possible):
    a. Read ALL .md files in .claude/plans/ (excluding archive/) to understand
       active tasks and their current state (completed, in progress, blocked).
-   b. Run `git log --oneline --since="today 00:00" --author="$(git config user.name)"`
-      to see today's commits.
+   b. Detect today's commit author safely:
+
+      ```bash
+      AUTHOR="$(git config user.name 2>/dev/null || true)"
+      if [ -n "$AUTHOR" ]; then
+        git log --oneline --since="today 00:00" --author="$AUTHOR"
+      else
+        # No git user configured (CI, fresh clone) — fall back to all authors.
+        git log --oneline --since="today 00:00"
+      fi
+      ```
    c. Run `git diff --stat HEAD~10..HEAD` (or appropriate range) to understand
       scope of changes.
 

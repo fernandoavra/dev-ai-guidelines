@@ -31,47 +31,11 @@ Sanitize $ARGUMENTS for use as filename: lowercase, replace spaces with
 hyphens, remove special characters, truncate to 50 chars max.
 Example: "migrar auth para OAuth2" becomes "migrar-auth-para-oauth2".
 
-Create .claude/plans/$TASK_NAME.md with the following structure:
-
-```
-# Task: $ARGUMENTS
-
-**Started:** (current date)
-**Status:** planning
-
-## Goal
-(one clear sentence describing what this task achieves)
-
-## Plan
-1. [step] — rationale
-2. [step] — rationale
-...
-
-## Files affected
-- `path/to/file` — reason for change
-- `path/to/file` — reason for change
-
-## Components involved
-- [component] — role in this task
-
-## Acceptance criteria
-- [ ] criterion 1
-- [ ] criterion 2
-
-## Risks and edge cases
-- [risk or edge case]
-
-## Open questions
-- [question that needs an answer before or during implementation]
-
-## Decision log
-| Date | Decision | Rationale | Impact |
-|------|----------|-----------|--------|
-| (date) | Initial plan approved | — | — |
-
----
-*last-updated: YYYY-MM-DD HH:MM*
-```
+Create `.claude/plans/$TASK_NAME.md` following the **base schema** defined
+in `.claude/plans/.plan-template.md`. Read that template first if you
+have not seen it in this session. Use `**Status:** planning` initially.
+The template is the source of truth for plan structure — do not invent
+sections or skip required ones.
 
 IMMEDIATELY after creating the plan file, register this task as active
 for the current terminal session by running:
