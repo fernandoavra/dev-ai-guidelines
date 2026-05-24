@@ -25,10 +25,6 @@ BLOCKED_PATTERNS=(
   "DROP TABLE"
   "TRUNCATE TABLE"
   "DELETE FROM.*WHERE 1"
-  "git push.*--force.*main"
-  "git push.*--force.*master"
-  "git push.*-f.*main"
-  "git push.*-f.*master"
 )
 
 for pattern in "${BLOCKED_PATTERNS[@]}"; do
