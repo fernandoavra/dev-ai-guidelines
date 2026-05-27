@@ -1,0 +1,183 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["CLAUDE.md", "PROJECT.md"],
+  "agent": {
+    "architect": {
+      "mode": "subagent",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "deny"
+      }
+    },
+    "code-reviewer": {
+      "mode": "subagent",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "bash": "allow",
+        "edit": "deny",
+        "task": "deny",
+        "webfetch": "deny"
+      }
+    },
+    "db-auditor": {
+      "mode": "subagent",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "bash": "allow",
+        "edit": "deny",
+        "task": "deny",
+        "webfetch": "deny"
+      }
+    },
+    "hostile-reviewer": {
+      "mode": "subagent",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "bash": "allow",
+        "edit": "deny",
+        "task": "deny",
+        "webfetch": "deny"
+      }
+    },
+    "qa-engineer": {
+      "mode": "subagent",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "bash": "allow",
+        "edit": "allow",
+        "task": "deny",
+        "webfetch": "deny"
+      }
+    },
+    "security-reviewer": {
+      "mode": "subagent",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "task": "deny",
+        "webfetch": "deny"
+      }
+    },
+    "tech-debt-auditor": {
+      "mode": "subagent",
+      "temperature": 0.1,
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "bash": "allow",
+        "edit": "deny",
+        "task": "deny",
+        "webfetch": "deny"
+      }
+    }
+  },
+  "command": {
+    "ai-setup": {
+      "description": "Setup inicial de IA para um projeto novo — cria CLAUDE.md, agents e skills",
+      "template": "{file:.opencode/commands/ai-setup.md}"
+    },
+    "ai-spec": {
+      "description": "Discovery estruturado de PRD/specs — entrevista o usuario antes de /ai-task ou /ai-feature",
+      "template": "{file:.opencode/commands/ai-spec.md}"
+    },
+    "ai-task": {
+      "description": "Inicia uma tarefa com exploracao e plano antes de qualquer codigo",
+      "template": "{file:.opencode/commands/ai-task.md}"
+    },
+    "ai-review": {
+      "description": "Revisao de codigo com agentes especializados antes de abrir PR",
+      "template": "{file:.opencode/commands/ai-review.md}"
+    },
+    "ai-hostile-review": {
+      "description": "Revisao hostil — valida se o trabalho realmente resolve o problema antes de avancar",
+      "template": "{file:.opencode/commands/ai-hostile-review.md}"
+    },
+    "ai-pr-review": {
+      "description": "Revisao hostil em massa de PRs abertos — spawna 1 agente por PR",
+      "template": "{file:.opencode/commands/ai-pr-review.md}"
+    },
+    "ai-feature": {
+      "description": "Implementa feature cross-componente — contrato antes dos agentes",
+      "template": "{file:.opencode/commands/ai-feature.md}"
+    },
+    "ai-bug": {
+      "description": "Diagnostico de bug — root cause antes de qualquer fix",
+      "template": "{file:.opencode/commands/ai-bug.md}"
+    },
+    "ai-add": {
+      "description": "Integra um novo componente a estrutura de IA existente",
+      "template": "{file:.opencode/commands/ai-add.md}"
+    },
+    "ai-ask": {
+      "description": "Responde perguntas sobre o projeto com base na documentacao existente",
+      "template": "{file:.opencode/commands/ai-ask.md}"
+    },
+    "ai-daily-close": {
+      "description": "Encerra o dia com resumo do que foi feito e o que ficou em aberto",
+      "template": "{file:.opencode/commands/ai-daily-close.md}"
+    },
+    "ai-daily-start": {
+      "description": "Inicia o dia lendo o resumo do dia anterior",
+      "template": "{file:.opencode/commands/ai-daily-start.md}"
+    },
+    "ai-db-audit": {
+      "description": "Auditoria de banco de dados — schema, migrations, indexes, modelagem e plano de acao",
+      "template": "{file:.opencode/commands/ai-db-audit.md}"
+    },
+    "ai-debt": {
+      "description": "Auditoria de divida tecnica — documenta sem corrigir",
+      "template": "{file:.opencode/commands/ai-debt.md}"
+    },
+    "ai-docs": {
+      "description": "Gera ou atualiza o PROJECT.md — documentacao viva para humanos e agentes de IA",
+      "template": "{file:.opencode/commands/ai-docs.md}"
+    },
+    "ai-handoff": {
+      "description": "Registra handoff da sessao atual antes de encerrar",
+      "template": "{file:.opencode/commands/ai-handoff.md}"
+    },
+    "ai-resume": {
+      "description": "Retoma uma tarefa salva com ai-handoff — le o plano e continua de onde parou",
+      "template": "{file:.opencode/commands/ai-resume.md}"
+    },
+    "ai-status": {
+      "description": "Visao rapida do estado da sessao — tarefa ativa, planos, git e daily",
+      "template": "{file:.opencode/commands/ai-status.md}"
+    },
+    "ai-task-delete": {
+      "description": "Descarta uma tarefa que nao sera executada — remove ou arquiva o plano com motivo",
+      "template": "{file:.opencode/commands/ai-task-delete.md}"
+    },
+    "ai-task-finish": {
+      "description": "Marca uma tarefa como concluida, registra o resumo final e arquiva o plano",
+      "template": "{file:.opencode/commands/ai-task-finish.md}"
+    },
+    "ai-update": {
+      "description": "Atualiza a estrutura de IA de um projeto existente — gap analysis antes de qualquer mudanca",
+      "template": "{file:.opencode/commands/ai-update.md}"
+    }
+  }
+}

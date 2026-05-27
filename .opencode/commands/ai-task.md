@@ -1,0 +1,93 @@
+---
+description: Inicia uma tarefa com exploracao e plano antes de qualquer codigo
+agent: build
+---
+
+If $ARGUMENTS is empty, ask the user to describe the task.
+Do NOT proceed without a task description.
+
+Task: $ARGUMENTS
+
+## Step 0 — Check for an existing spec
+
+Sanitize $ARGUMENTS into a slug (same rule as Step 2) and check for
+`.claude/plans/specs/<slug>.md`. If it exists, read it first — its
+Problem, Goals, Non-goals, and Constraints become the starting context
+for the plan. The plan must include `**Source spec:** .claude/plans/specs/<slug>.md`
+in the header (right after Status) for traceability.
+
+If no spec exists, proceed normally — specs are optional for tasks.
+
+## Step 1 — Explore
+
+Before writing any code, use subagents to:
+- Read PROJECT.md and the relevant section of CLAUDE.md
+- Read .claude/agents/ and identify which agents are involved in this task
+- Map every file that will need to change and why
+- Identify cross-component dependencies (which components are affected)
+- Flag any ambiguity that requires a decision before proceeding
+
+Acceptance criteria:
+(infer from task context or ask if unclear)
+
+**Cross-component check:** If the exploration reveals that more than 3 files
+across different components are affected, flag this to the user and suggest
+using /ai-feature instead. Wait for the user to decide before proceeding.
+
+## Step 2 — Plan and persist
+
+Sanitize $ARGUMENTS for use as filename: lowercase, replace spaces with
+hyphens, remove special characters, truncate to 50 chars max.
+Example: "migrar auth para OAuth2" becomes "migrar-auth-para-oauth2".
+
+Create `.claude/plans/$TASK_NAME.md` following the **base schema** defined
+in `.claude/plans/.plan-template.md`. Read that template first if you
+have not seen it in this session. Use `**Status:** planning` initially.
+The template is the source of truth for plan structure — do not invent
+sections or skip required ones.
+
+IMMEDIATELY after creating the plan file, register this task as active
+for the current terminal session by running:
+
+```bash
+FILE=".claude/plans/.active-sessions.json"
+[ -f "$FILE" ] || echo '{}' > "$FILE"
+jq --arg pid "$PPID" --arg task "$TASK_NAME" \
+  '.[$pid] = {"task": $task, "started": (now | todate)}' \
+  "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
+```
+
+Do NOT skip this — the statusline depends on it to display the active task.
+
+## Step 3 — Present and wait
+
+Present the plan to the user with:
+1. Implementation plan (steps, order, rationale)
+2. Files to be created or modified (with reason for each)
+3. Risks and edge cases
+4. Questions that need answers before starting
+
+Confirm that the plan was saved at .claude/plans/$TASK_NAME.md.
+
+Wait for my approval before writing any code.
+
+## Step 4 — Keep the plan alive (CRITICAL)
+
+Once implementation begins, update .claude/plans/$TASK_NAME.md whenever:
+- A decision changes the original scope or approach
+- A new file is added or a planned file is no longer needed
+- A risk materializes or a new risk is discovered
+- An open question is answered
+- A step is completed (check off acceptance criteria)
+- Status changes (planning → in-progress → blocked → done)
+
+For each scope-affecting decision, append a row to the **Decision log** table.
+
+Update the **last-updated** timestamp on every write.
+
+This ensures /ai-handoff can read the plan file and produce a handoff
+with minimal effort — the plan IS the source of truth for this task.
+
+When all acceptance criteria are met, use /ai-task-finish to formally
+close the task, write a completion summary, and archive the plan.
+To discard a task that will not be executed, use /ai-task-delete.

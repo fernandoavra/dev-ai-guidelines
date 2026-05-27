@@ -1,6 +1,6 @@
 # dev-ai-guidelines
 
-Playbook de desenvolvimento apoiado por agentes de IA — focado em Claude Code e Cursor.
+Playbook de desenvolvimento apoiado por agentes de IA — compatível com Claude Code, OpenCode e Cursor.
 
 Contém prompts, templates, hooks, comandos e scripts de setup para estruturar
 projetos, automatizar fluxos e integrar agentes de IA ao ciclo diário de desenvolvimento.
@@ -58,47 +58,52 @@ cd dev-ai-guidelines
 
 ---
 
-## Comandos `/ai:*` disponíveis após setup
+## Comandos disponiveis apos setup
 
-| Comando | Quando usar |
-|---|---|
-| `/ai:setup` | Projeto novo — cria CLAUDE.md, agents, skills |
-| `/ai:update` | Projeto existente — gap analysis antes de mudar |
-| `/ai:docs` | Gera ou atualiza `PROJECT.md` |
-| `/ai:ask <pergunta>` | Responde perguntas sobre o projeto com base na documentação — sem escanear o codebase |
-| `/ai:spec <tema>` | Discovery estruturado — entrevista adaptive (triagem -> 6 ou 10 perguntas) que gera PRD em `.claude/plans/specs/` antes de virar plano |
-| `/ai:task <descrição>` | Início de qualquer tarefa — plano antes do código (le spec existente se houver) |
-| `/ai:task-finish <nome>` | Marca tarefa como concluída — resumo final e arquiva o plano |
-| `/ai:task-delete <nome>` | Descarta tarefa que não será executada — remove ou arquiva com motivo |
-| `/ai:handoff <nome-da-tarefa>` | Salva estado de uma tarefa antes de `/clear` ou encerrar |
-| `/ai:resume [nome-da-tarefa]` | Retoma tarefa salva — lista disponíveis se nome omitido |
-| `/ai:daily-close` | Final do dia — gera resumo do progresso e pendências |
-| `/ai:daily-start` | Início do dia — briefing com contexto do dia anterior |
-| `/ai:review` | Code review com agentes especializados antes de abrir PR |
-| `/ai:hostile-review [task]` | Gate adversarial — valida se o trabalho atinge o objetivo (distinto de qualidade de codigo) |
-| `/ai:pr-review [pr-numbers]` | Revisao em massa de PRs abertos — 1 steward Maestri por PR em paralelo |
-| `/ai:debt` | Auditoria periódica de dívida técnica |
-| `/ai:db-audit [paths]` | Auditoria de banco de dados — schema, migrations, indexes, modelagem e plano de acao |
-| `/ai:bug <sintoma>` | Diagnóstico de bug — root cause antes de qualquer fix |
-| `/ai:feature <descrição>` | Feature cross-componente — contrato antes dos agentes (le spec existente se houver) |
-| `/ai:add <caminho>` | Novo componente adicionado — integração cirúrgica na estrutura existente |
-| `/ai:status` | Visão rápida da sessão — tarefa ativa, planos abertos, git, daily |
+### Claude Code: `/ai:*` (prefixo dois-pontos) | OpenCode: `/ai-*` (prefixo hifen)
 
-### Discovery: `/ai:spec` antes do plano
+Os mesmos 21 comandos estao disponiveis em ambos os ambientes — apenas o prefixo muda.
+
+| Comando (Claude Code) | Comando (OpenCode) | Quando usar |
+|---|---|---|
+| `/ai:setup` | `/ai-setup` | Projeto novo — cria CLAUDE.md, agents, skills |
+| `/ai:update` | `/ai-update` | Projeto existente — gap analysis antes de mudar |
+| `/ai:docs` | `/ai-docs` | Gera ou atualiza `PROJECT.md` |
+| `/ai:ask <pergunta>` | `/ai-ask <pergunta>` | Responde perguntas sobre o projeto com base na documentacao — sem escanear o codebase |
+| `/ai:spec <tema>` | `/ai-spec <tema>` | Discovery estruturado — entrevista adaptive (triagem -> 6 ou 10 perguntas) que gera PRD em `.claude/plans/specs/` antes de virar plano |
+| `/ai:task <descricao>` | `/ai-task <descricao>` | Inicio de qualquer tarefa — plano antes do codigo (le spec existente se houver) |
+| `/ai:task-finish <nome>` | `/ai-task-finish <nome>` | Marca tarefa como concluida — resumo final e arquiva o plano |
+| `/ai:task-delete <nome>` | `/ai-task-delete <nome>` | Descarta tarefa que nao sera executada — remove ou arquiva com motivo |
+| `/ai:handoff <nome-da-tarefa>` | `/ai-handoff <nome-da-tarefa>` | Salva estado de uma tarefa antes de pausar |
+| `/ai:resume [nome-da-tarefa]` | `/ai-resume [nome-da-tarefa]` | Retoma tarefa salva — lista disponiveis se nome omitido |
+| `/ai:daily-close` | `/ai-daily-close` | Final do dia — gera resumo do progresso e pendencias |
+| `/ai:daily-start` | `/ai-daily-start` | Inicio do dia — briefing com contexto do dia anterior |
+| `/ai:review` | `/ai-review` | Code review com agentes especializados antes de abrir PR |
+| `/ai:hostile-review [task]` | `/ai-hostile-review [task]` | Gate adversarial — valida se o trabalho atinge o objetivo |
+| `/ai:pr-review [pr-numbers]` | `/ai-pr-review [pr-numbers]` | Revisao em massa de PRs abertos — 1 agente por PR em paralelo |
+| `/ai:debt` | `/ai-debt` | Auditoria periodica de divida tecnica |
+| `/ai:db-audit [paths]` | `/ai-db-audit [paths]` | Auditoria de banco de dados — schema, migrations, indexes, modelagem e plano de acao |
+| `/ai:bug <sintoma>` | `/ai-bug <sintoma>` | Diagnostico de bug — root cause antes de qualquer fix |
+| `/ai:feature <descricao>` | `/ai-feature <descricao>` | Feature cross-componente — contrato antes dos agentes (le spec existente se houver) |
+| `/ai:add <caminho>` | `/ai-add <caminho>` | Novo componente adicionado — integracao cirurgica na estrutura existente |
+| `/ai:status` | `/ai-status` | Visao rapida da sessao — tarefa ativa, planos abertos, git, daily |
+
+### Discovery: `/ai:spec` / `/ai-spec` antes do plano
 
 Quando o pedido ainda esta vago ("queremos refazer o checkout", "precisamos
-de relatorios"), use `/ai:spec` antes de `/ai:task` ou `/ai:feature`. O
-comando faz triagem na primeira pergunta:
+de relatorios"), use `/ai:spec` (Claude Code) ou `/ai-spec` (OpenCode) antes
+de `/ai:task`/`/ai-task` ou `/ai:feature`/`/ai-feature`. O comando faz
+triagem na primeira pergunta:
 
-- **Ajuste pequeno** → ja redireciona para `/ai:task`.
+- **Ajuste pequeno** → ja redireciona para `/ai:task`/`/ai-task`.
 - **Feature media** → 6 perguntas (problema, usuario, AC, out-of-scope,
   constraints, riscos).
 - **Iniciativa grande** → 10 perguntas (acima + personas, metricas,
   milestones, stakeholders).
 
 Output: PRD em `.claude/plans/specs/<slug>.md` que os comandos
-`/ai:task` e `/ai:feature` detectam automaticamente e referenciam como
-`Source spec:` no plan file, preservando rastreabilidade do PORQUE.
+`/ai:task`/`/ai-task` e `/ai:feature`/`/ai-feature` detectam automaticamente
+e referenciam como `Source spec:` no plan file, preservando rastreabilidade do PORQUE.
 
 Spec captura WHY/WHAT. Plan captura HOW. Os dois nao se duplicam.
 
@@ -107,12 +112,12 @@ Spec captura WHY/WHAT. Plan captura HOW. Os dois nao se duplicam.
 Os dois comandos cobrem diferentes camadas e devem ser usados em sequencia
 antes de abrir um PR significativo:
 
-- **`/ai:hostile-review`** — *"isso resolve o problema?"* Gate adversarial.
+- **`/ai:hostile-review`** (OpenCode: `/ai-hostile-review`) — *"isso resolve o problema?"* Gate adversarial.
   Pergunta se o trabalho atinge o objetivo declarado no plano, valida
   criterios de aceitacao, caca gaps e scope creep. Veredito GO/NO-GO.
-- **`/ai:review`** — *"o codigo esta bom?"* Code review tecnico. Dispatch
+- **`/ai:review`** (OpenCode: `/ai-review`) — *"o codigo esta bom?"* Code review tecnico. Dispatch
   paralelo de code-reviewer + security-reviewer + qa-engineer. Reporta
-  achados em escala P0/P1/P2/P3 unificada (ver `agents/severity-scale.md`).
+  achados em escala P0/P1/P2/P3 unificada (ver skill `severity-scale`).
 
 Em PRs em massa, `/ai:pr-review` orquestra ambos automaticamente via
 Maestri stewards.
@@ -234,8 +239,8 @@ dev-ai-guidelines/
 ├── scripts/                    # Setup automatizado (global + projeto)
 │   ├── setup-global.sh / .ps1  # Instala hooks, comandos e CLAUDE.md global
 │   ├── setup-project.sh / .ps1 # Instala hooks do projeto (commitável)
-│   ├── update-commands.sh      # Atualiza apenas comandos /ai:* (sem hooks/settings)
-│   ├── update-statusline.sh    # Atualiza apenas statusline + bloco statusLine (merge cirurgico)
+│   ├── update-commands.sh      # Atualiza apenas comandos (sem hooks/settings)
+│   ├── update-statusline.sh    # Atualiza apenas statusline (merge cirurgico)
 │   └── README.md
 │
 ├── commands/ai/                # Comandos /ai:* para Claude Code (21)
@@ -247,13 +252,33 @@ dev-ai-guidelines/
 │   ├── review.md  hostile-review.md  pr-review.md
 │   ├── debt.md  db-audit.md  bug.md  feature.md  status.md
 │
+├── .opencode/                  # Comandos, agentes e skills nativos do OpenCode
+│   ├── commands/               # 21 comandos /ai-* (equivalentes aos /ai:*)
+│   │   ├── ai-setup.md  ai-update.md  ai-docs.md  ai-add.md  ai-ask.md
+│   │   ├── ai-spec.md  ai-task.md  ai-task-finish.md  ai-task-delete.md
+│   │   ├── ai-handoff.md  ai-resume.md  ai-daily-close.md  ai-daily-start.md
+│   │   ├── ai-review.md  ai-hostile-review.md  ai-pr-review.md
+│   │   ├── ai-debt.md  ai-db-audit.md  ai-bug.md  ai-feature.md  ai-status.md
+│   ├── agents/                 # 7 subagentes com permissionamento nativo
+│   │   ├── architect.md  code-reviewer.md  db-auditor.md
+│   │   ├── hostile-reviewer.md  qa-engineer.md
+│   │   ├── security-reviewer.md  tech-debt-auditor.md
+│   └── skills/
+│       └── severity-scale/     # Escala P0-P3 como skill carregavel
+│           └── SKILL.md
+│
+├── opencode/                   # Documentacao e guia de mapeamento OpenCode
+│   └── README.md               # Claude Code ↔ OpenCode mapping
+│
+├── opencode.json               # Config OpenCode com todos agentes e comandos
+│
 ├── hooks/                      # Hooks Claude Code — bash (macOS/Linux)
 │   ├── startup-check.sh        # Detecta projeto sem CLAUDE.md
 │   ├── intercept-clear.sh      # Força handoff antes de /clear
 │   ├── post-compact.sh         # Reorienta após /compact
 │   ├── post-clear-orient.sh    # Reorienta após /clear
-│   ├── block-dangerous.sh      # Bloqueia comandos destrutivos + leitura de .env via shell
-│   ├── block-env-files.sh      # Bloqueia Read/Write/Edit em .env e environment.*
+│   ├── block-dangerous.sh      # Bloqueia comandos destrutivos
+│   ├── block-env-files.sh      # Bloqueia acesso a .env
 │   ├── format-on-edit.sh       # Auto-formata após edições
 │   ├── require-tests.sh        # Bloqueia PR se testes falhando
 │   ├── session-log.sh          # Log + notificação desktop
@@ -265,27 +290,10 @@ dev-ai-guidelines/
 │   ├── hooks.json              # Configuração de referência
 │   └── INSTALL.md              # Notas de compatibilidade Windows
 │
-├── cursor/rules/               # Cursor Rules — equivalentes dos /ai:*
-│   ├── session-handoff.mdc     # Handoff com nome de tarefa
-│   ├── session-resume.mdc      # Retomada de tarefa salva
-│   ├── task-finish.mdc         # Conclusão formal de tarefa
-│   ├── task-delete.mdc         # Descarte de tarefa não executada
-│   ├── daily-close.mdc         # Resumo de final do dia
-│   ├── daily-start.mdc         # Briefing de início do dia
-│   ├── task-start.mdc          # Início de tarefa com plano
-│   ├── setup-project.mdc       # Setup de projeto novo
-│   ├── gap-analysis.mdc        # Gap analysis de projeto existente
-│   ├── project-documentation.mdc # Geração de PROJECT.md
-│   ├── code-review.mdc         # Review antes de PR
-│   ├── bug-diagnosis.mdc       # Diagnóstico de bug
-│   ├── tech-debt-audit.mdc     # Auditoria de dívida técnica
-│   ├── cross-component-feature.mdc # Feature cross-componente
-│   ├── project-conventions.mdc # Convenções do projeto (alwaysApply)
-│   ├── architect.mdc           # Agente arquiteto
-│   ├── code-reviewer.mdc       # Agente revisor de código
-│   ├── qa-engineer.mdc         # Agente QA
-│   ├── security-reviewer.mdc   # Agente segurança
-│   └── tech-debt-auditor.mdc   # Agente dívida técnica
+├── cursor/                     # Cursor Rules — equivalentes dos /ai:*
+│   ├── rules/*.mdc             # 19 regras .mdc para Cursor
+│   ├── templates/               # Templates .cursorrules
+│   └── README.md                # Guia de configuracao Cursor
 │
 ├── templates/
 │   ├── CLAUDE.md               # Template do contexto do projeto
@@ -293,15 +301,11 @@ dev-ai-guidelines/
 │   ├── PROJECT.md              # Template da documentação do projeto
 │   └── active-plan.md          # Template de handoff de sessão
 │
-├── agents/                     # Subagentes prontos para uso
-│   ├── architect.md
-│   ├── code-reviewer.md
-│   ├── db-auditor.md
-│   ├── hostile-reviewer.md
-│   ├── qa-engineer.md
-│   ├── security-reviewer.md
-│   ├── tech-debt-auditor.md
-│   └── severity-scale.md       # Escala P0/P1/P2/P3 unificada (referenciada pelos agents)
+├── agents/                     # Subagentes Claude Code (8)
+│   ├── architect.md  code-reviewer.md  db-auditor.md
+│   ├── hostile-reviewer.md  qa-engineer.md
+│   ├── security-reviewer.md  tech-debt-auditor.md
+│   └── severity-scale.md       # Escala P0-P3 (referenciada pelos agents)
 │
 ├── archive/                    # Material legado mantido para referencia
 │   ├── README.md               # Mapa: prompt original → comando atual
@@ -470,7 +474,11 @@ Se não configurar nada, o Claude Code usa o padrão do plano automaticamente.
 |---|---|---|---|---|
 | Hooks Claude Code (`.sh`) | ✅ | ✅ | ✅ | ⚠️ |
 | Hooks Cursor (`.mjs`) | ✅ | ✅ | ✅ | ✅ |
-| Comandos `/ai:*` | ✅ | ✅ | ✅ | ✅ |
+| Comandos `/ai:*` (Claude Code) | ✅ | ✅ | ✅ | ✅ |
+| Comandos `/ai-*` (OpenCode) | ✅ | ✅ | ✅ | ✅ |
+| Agentes (Claude Code) | ✅ | ✅ | ✅ | ✅ |
+| Agentes (OpenCode) | ✅ | ✅ | ✅ | ✅ |
+| Skills (OpenCode) | ✅ | ✅ | ✅ | ✅ |
 | Cursor Rules (`.mdc`) | ✅ | ✅ | ✅ | ✅ |
 | Scripts de setup | `.sh` | `.sh` | `.sh` | `.ps1` |
 
@@ -491,6 +499,10 @@ Se não configurar nada, o Claude Code usa o padrão do plano automaticamente.
 - [Claude Code Best Practices](https://code.claude.com/docs/en/best-practices)
 - [Claude Code Subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code Hooks](https://code.claude.com/docs/en/hooks)
+- [OpenCode Docs](https://opencode.ai/docs/)
+- [OpenCode Agents](https://opencode.ai/docs/agents/)
+- [OpenCode Commands](https://opencode.ai/docs/commands/)
+- [OpenCode Skills](https://opencode.ai/docs/skills/)
 - [Cursor Hooks](https://cursor.com/docs/hooks)
 - [Skills Explained](https://claude.com/blog/skills-explained)
 
