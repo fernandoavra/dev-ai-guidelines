@@ -105,11 +105,7 @@ else
 {
   "_scope": "project — commitado, vale para todo o time",
   "_managed_by": "dev-ai-guidelines/scripts/setup-project.sh",
-
-  "model": "claude-sonnet-4-6",
-
   "hooks": {
-
     "PostToolUse": [
       {
         "_comment": "Auto-formata após qualquer edição — stack detectada automaticamente",
@@ -121,7 +117,6 @@ else
         }]
       }
     ],
-
     "PreToolUse": [
       {
         "_comment": "Bloqueia PR se testes estiverem falhando",
@@ -133,18 +128,34 @@ else
         }]
       }
     ]
-
   }
 }
 EOF
   success "settings.json de projeto criado em $CLAUDE_PROJECT_SETTINGS"
 fi
 
-# Cria .claude/plans/ se não existir
+# Cria .claude/plans/ se não existir — PLANOS DE EXECUCAO (transitorios)
 mkdir -p "$CLAUDE_PROJECT_DIR/plans"
 if [ ! -f "$CLAUDE_PROJECT_DIR/plans/active-plan.md" ]; then
   cp "$GUIDELINES_DIR/templates/active-plan.md" "$CLAUDE_PROJECT_DIR/plans/"
   success "Template active-plan.md criado em .claude/plans/"
+fi
+
+# Cria docs/ se não existir — DOCUMENTACAO DURAVEL (consulta posterior)
+# Separacao explicita: docs/ = registros que persistem; .claude/plans/ = execucao transitoria
+mkdir -p "$PROJECT_DIR/docs"
+if [ ! -f "$PROJECT_DIR/docs/README.md" ]; then
+  cat > "$PROJECT_DIR/docs/README.md" << 'EOF'
+# docs/
+
+Documentacao DURAVEL do projeto, para consulta/referencia posterior: arquitetura,
+guias, decisoes, relatorios concluidos. Escrita em PT-BR.
+
+Nao confundir com `.claude/plans/`, que guarda PLANOS DE EXECUCAO transitorios
+(active-plan, handoffs, decomposicao de tarefas) — descartaveis ao concluir.
+Regra: documento finalizado para consulta vai em docs/; trabalho ativo em .claude/plans/.
+EOF
+  success "docs/ criado com README (documentacao duravel)"
 fi
 
 # =============================================================================
@@ -247,7 +258,9 @@ echo ""
 echo "  Claude Code"
 echo "  ├── .claude/settings.json     → format-on-edit + require-tests"
 echo "  ├── .claude/hooks/            → scripts de hook"
-echo "  └── .claude/plans/            → active-plan.md criado"
+echo "  └── .claude/plans/            → planos de execucao (active-plan.md)"
+echo ""
+echo "  docs/                         → documentacao duravel (consulta posterior)"
 echo ""
 echo "  Cursor"
 echo "  ├── .cursor/hooks.json        → format-on-edit + require-tests"

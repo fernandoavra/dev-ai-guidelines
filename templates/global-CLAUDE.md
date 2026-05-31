@@ -196,20 +196,22 @@ Se o usuário pedir para ler um `.env`, responder:
 
 ## Padrão de Idioma
 
-Todos os projetos seguem esta convenção de idioma para arquivos de configuração de IA:
+Três tipos de arquivo, separados por finalidade e ciclo de vida:
 
-| Tipo de arquivo | Idioma | Exemplos |
-|----------------|--------|----------|
-| **user-facing** (lidos por humanos) | **PT-BR** | `CLAUDE.md`, `AGENTS.md`, `PROJECT.md`, `README.md`, `docs/` |
-| **claude-exclusive** (consumidos apenas por agentes) | **English** | `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`, `.claude/plans/` |
+| Tipo de arquivo | Finalidade | Idioma | Exemplos |
+|----------------|-----------|--------|----------|
+| **Documentação durável** | Consulta/referência posterior — persiste | **PT-BR** | `CLAUDE.md`, `AGENTS.md`, `PROJECT.md`, `README.md`, `docs/`, relatórios e registros |
+| **Plano de execução** | Trabalho ativo/transitório — descartável ao concluir | **PT-BR** | `.claude/plans/` (active-plan, handoffs, decomposição de tarefas) |
+| **Instrução de agente/IA** | Prompt reutilizável que configura o modelo | **English** | `.claude/agents/*.md`, `.claude/skills/*/SKILL.md` |
 
 **Regras:**
-- Arquivos user-facing devem ser escritos em PT-BR sem acentos (padrao: "nao", "eh", "funcao")
-- Arquivos claude-exclusive devem ser escritos em inglês — traduzir para PT-BR reduz a qualidade das instruções para o modelo
+- Documentação e planos de execução (`.md` lidos/revisados por humanos) são escritos em PT-BR. Somente instruções de agente/IA (agents, skills — prompts reutilizáveis que configuram o modelo) ficam em inglês — traduzi-los reduz a qualidade das instruções para o modelo
+- Separação docs vs plans: registros DURÁVEIS para consulta (relatórios concluídos, arquitetura, guias, decisões) vão em `docs/`; planos de trabalho ATIVO/transitório vão em `.claude/plans/`. Um documento finalizado para consulta não é um plano
+- Arquivos PT-BR devem ser escritos sem acentos (padrao: "nao", "eh", "funcao")
 - Termos técnicos (middleware, observer, broadcast, cache, queue, IPC) permanecem em inglês em ambos os casos
 - Nomes de arquivos, paths, comandos, código e variáveis nunca são traduzidos
 
 ---
 <!-- Gerenciado por dev-ai-guidelines — não editar manualmente -->
 <!-- Atualizar rodando: dev-ai-guidelines/scripts/setup-global.sh -->
-version: 1.3
+version: 1.5
