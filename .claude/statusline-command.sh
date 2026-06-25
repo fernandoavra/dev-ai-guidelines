@@ -22,6 +22,7 @@ five_hour_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage //
 five_hour_resets=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 seven_day_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 seven_day_resets=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
+total_cost=$(echo "$input" | jq -r '.cost.total_cost_usd // empty')
 cwd=$(echo "$input" | jq -r '.cwd // .workspace.current_dir // "."')
 
 # ── Rate limit cache ──────────────────────────────────────────────────────────
@@ -32,9 +33,11 @@ cwd=$(echo "$input" | jq -r '.cwd // .workspace.current_dir // "."')
 RL_CACHE_FILE="$HOME/.claude/.statusline-cache.json"
 from_cache=0
 cache_age_label=""
+# Preserva valores frescos do JSON antes do restore do cache
+fresh_cost="$total_cost"
 
 # Grava cache quando temos dados frescos
-if [ -n "$five_hour_pct" ] || [ -n "$seven_day_pct" ]; then
+if [ -n "$five_hour_pct" ] || [ -n "$seven_day_pct" ] || [ -n "$total_cost" ]; then
   _now=$(date +%s)
   _tmp=$(mktemp 2>/dev/null) || _tmp=""
   if [ -n "$_tmp" ]; then
@@ -44,12 +47,14 @@ if [ -n "$five_hour_pct" ] || [ -n "$seven_day_pct" ]; then
       --arg fh_resets "${five_hour_resets:-}" \
       --arg sd_pct "${seven_day_pct:-}" \
       --arg sd_resets "${seven_day_resets:-}" \
+      --arg cost "${total_cost:-}" \
       '{
         saved_at: $saved_at,
         five_hour_pct: $fh_pct,
         five_hour_resets: $fh_resets,
         seven_day_pct: $sd_pct,
-        seven_day_resets: $sd_resets
+        seven_day_resets: $sd_resets,
+        total_cost: $cost
       }' > "$_tmp" 2>/dev/null && mv "$_tmp" "$RL_CACHE_FILE" 2>/dev/null
     [ -f "$_tmp" ] && rm -f "$_tmp"
   fi
@@ -63,6 +68,7 @@ if [ -z "$five_hour_pct" ] && [ -z "$seven_day_pct" ] && [ -f "$RL_CACHE_FILE" ]
     five_hour_resets=$(jq -r '.five_hour_resets // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
     seven_day_pct=$(jq -r '.seven_day_pct // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
     seven_day_resets=$(jq -r '.seven_day_resets // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
+    [ -z "$fresh_cost" ] && total_cost=$(jq -r '.total_cost // empty' "$RL_CACHE_FILE" 2>/dev/null || true)
     from_cache=1
 
     _now=$(date +%s)
@@ -90,6 +96,12 @@ format_k() {
   else
     printf "%d" "$n"
   fi
+}
+
+fmt_cost() {
+  local c=$1
+  [ -z "$c" ] || [ "$c" = "0" ] || [ "$c" = "0.0" ] && return
+  awk -v c="$c" 'BEGIN { if (c < 0.0001) printf "$<0.0001"; else if (c < 0.01) printf "$%.4f", c; else printf "$%.2f", c }'
 }
 
 # Round to nearest 0.1k / 0.1m
@@ -139,11 +151,15 @@ remaining_fmt=$(fmt_tokens "$remaining_tokens")
 # ── Model display name: strip "Claude " prefix for brevity ────────────────────
 model_short=$(echo "$model_name" | sed 's/^Claude //')
 
-# ── LINE 1: Model | token usage | free tokens ─────────────────────────────────
+# ── Cost (session) ────────────────────────────────────────────────────────────
+cost_fmt=$(fmt_cost "${total_cost:-}")
+
+# ── LINE 1: Model | token usage | free tokens | session cost ──────────────────
 line1=$(printf "${CYAN}%s (%s context)${RESET} | ${CYAN}%s / %s (%d%% used)${RESET} | ${CYAN}%s %d%% free${RESET}" \
   "$model_short" "$ctx_fmt" \
   "$used_fmt" "$ctx_fmt" "$used_pct_int" \
   "$remaining_fmt" "$remaining_pct_int")
+[ -n "$cost_fmt" ] && line1="${line1} | ${CYAN}session: ${GREEN}${cost_fmt}${RESET}"
 
 # ── Git branch ────────────────────────────────────────────────────────────────
 git_branch=""
@@ -182,20 +198,20 @@ if [ -n "$five_hour_pct" ]; then
   if [ -n "$seven_day_pct" ]; then
     sd_pct_int=$(printf "%.0f" "$seven_day_pct")
     sd_meter=$(dot_meter "$sd_pct_int")
-    line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET} | ${CYAN}weekly: ${GREEN}%s %d%%${RESET}%s%b" \
+    line2=$(printf "${CYAN}5h: ${GREEN}%s %d%%${RESET} | ${CYAN}7d: ${GREEN}%s %d%%${RESET}%s%b" \
       "$fh_meter" "$fh_pct_int" \
       "$sd_meter" "$sd_pct_int" \
       "$cache_badge" \
       "${branch_task:+ |$branch_task}")
   else
-    line2=$(printf "${CYAN}current: ${GREEN}%s %d%%${RESET}%s%b" \
+    line2=$(printf "${CYAN}5h: ${GREEN}%s %d%%${RESET}%s%b" \
       "$fh_meter" "$fh_pct_int" \
       "$cache_badge" \
       "${branch_task:+ |$branch_task}")
   fi
 else
   # Sem dados frescos nem cache: placeholder discreto explicando o estado
-  placeholder=$(printf "${CYAN}current: ${YELLOW}—${RESET} | ${CYAN}weekly: ${YELLOW}—${RESET}")
+  placeholder=$(printf "${CYAN}5h: ${YELLOW}—${RESET} | ${CYAN}7d: ${YELLOW}—${RESET}")
   if [ -n "$branch_task" ]; then
     line2=$(printf "%s%b" "$placeholder" " |$branch_task")
   else
